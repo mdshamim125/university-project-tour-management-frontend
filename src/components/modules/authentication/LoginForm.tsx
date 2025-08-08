@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import login from "@/assets/images/login.jpg";
+import loginImage from "@/assets/images/login.jpg";
 import { Link } from "react-router";
 import {
   Form,
@@ -17,6 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Password from "@/components/ui/Password";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.email(),
@@ -27,6 +29,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [login] = useLoginMutation();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,10 +41,22 @@ export function LoginForm({
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    const userInfo = {
+      email: values.email,
+      password: values.password,
+    };
+    console.log(userInfo);
+    try {
+      const result = await login(userInfo).unwrap();
+      console.log(result);
+      toast.success("Login Successful!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Login failed. Please try again.");
+    }
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -95,7 +111,9 @@ export function LoginForm({
                       </FormItem>
                     )}
                   />
-                  <Button className="w-full" type="submit">Submit</Button>
+                  <Button className="w-full" type="submit">
+                    Submit
+                  </Button>
                 </form>
               </Form>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -129,7 +147,7 @@ export function LoginForm({
           </div>
           <div className="bg-muted md:col-span-3 relative hidden md:block">
             <img
-              src={login}
+              src={loginImage}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />

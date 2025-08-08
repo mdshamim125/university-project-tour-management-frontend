@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import register from "@/assets/images/register.jpg";
+import registerImage from "@/assets/images/register.jpg";
 import { Link } from "react-router";
 import {
   Form,
@@ -17,6 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Password from "@/components/ui/Password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 const registerSchema = z
   .object({
     name: z
@@ -40,6 +42,8 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [register] = useRegisterMutation();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -51,10 +55,22 @@ export function RegisterForm({
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof registerSchema>) {
+  async function onSubmit(values: z.infer<typeof registerSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    const userInfo = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
+    try {
+      const result = await register(userInfo).unwrap();
+      console.log(result);
+      toast.success("User Created Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create user");
+    }
   }
 
   return (
@@ -142,7 +158,9 @@ export function RegisterForm({
                       </FormItem>
                     )}
                   />
-                  <Button className="w-full" type="submit">Submit</Button>
+                  <Button className="w-full" type="submit">
+                    Submit
+                  </Button>
                 </form>
               </Form>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -176,7 +194,7 @@ export function RegisterForm({
           </div>
           <div className="bg-muted md:col-span-3  relative hidden md:block">
             <img
-              src={register}
+              src={registerImage}
               alt="Image"
               className="absolute inset-0 h-full w-full dark:brightness-[0.2] dark:grayscale"
             />
