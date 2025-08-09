@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import loginImage from "@/assets/images/login.jpg";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import { z } from "zod";
 import Password from "@/components/ui/Password";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
+import config from "@/config";
 
 const formSchema = z.object({
   email: z.email(),
@@ -30,6 +31,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [login] = useLoginMutation();
+  const navigate = useNavigate();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,13 +53,53 @@ export function LoginForm({
     console.log(userInfo);
     try {
       const result = await login(userInfo).unwrap();
-      console.log(result);
-      toast.success("Login Successful!");
-    } catch (error) {
-      console.log(error);
-      toast.error("Login failed. Please try again.");
+      if (result.success) {
+        toast.success("Logged in successfully");
+        navigate("/");
+      }
+    } catch (err) {
+      console.error(err);
+
+      // if (err.data.message === "User does not exist") {
+      //   toast.error("User does not exist");
+      //   return;
+      // }
+
+      // if (err.data.message === "Missing credentials") {
+      //   toast.error("Please enter your email and password");
+      //   return;
+      // }
+
+      // if (
+      //   err.data.message ===
+      //   "You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password."
+      // ) {
+      //   toast.error(
+      //     "You have authenticated through Google. Please login with Google."
+      //   );
+      //   return;
+      // }
+
+      // if (err.data.message === "Password does not match") {
+      //   toast.error("Invalid credentials");
+      //   return;
+      // }
+
+      if (err.data.message === "Password does not match") {
+        toast.error("Invalid credentials");
+      }
+
+      if (err.data.message === "User is not verified") {
+        toast.error("Your account is not verified");
+        navigate("/verify", { state: userInfo.email });
+      }
     }
   }
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${config.baseUrl}/auth/google`;
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
@@ -123,6 +165,7 @@ export function LoginForm({
               </div>
               <div className="w-full">
                 <Button
+                  onClick={handleGoogleLogin}
                   variant="outline"
                   title="Login with Google"
                   type="button"

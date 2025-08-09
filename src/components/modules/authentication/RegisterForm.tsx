@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import registerImage from "@/assets/images/register.jpg";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import { z } from "zod";
 import Password from "@/components/ui/Password";
 import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
+import config from "@/config";
 const registerSchema = z
   .object({
     name: z
@@ -43,6 +44,7 @@ export function RegisterForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [register] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -67,11 +69,16 @@ export function RegisterForm({
       const result = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User Created Successfully");
+      navigate("/verify", { state: userInfo.email });
     } catch (error) {
       console.log(error);
       toast.error("Failed to create user");
     }
   }
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${config.baseUrl}/auth/google`;
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -170,8 +177,9 @@ export function RegisterForm({
               </div>
               <div className="w-full">
                 <Button
+                  onClick={handleGoogleLogin}
                   variant="outline"
-                  title="Login with Google"
+                  title="Continue with Google"
                   type="button"
                   className="w-full"
                 >
