@@ -12,38 +12,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ModeToggle } from "./ModeToggler";
-import { Link } from "react-router";
-import {
-  authApi,
-  useLogOutMutation,
-  useUserInfoQuery,
-} from "@/redux/features/auth/auth.api";
-import { useAppDispatch } from "@/redux/hook";
+import { Link, useLocation } from "react-router";
+import UserMenu from "../user-menu";
 
-// Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   { href: "/", label: "Home" },
-  { href: "about", label: "About" },
+  { href: "/tours", label: "All Tours" },
+  { href: "/blogs", label: "Blog" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
-  const { data: userInfo } = useUserInfoQuery(undefined);
-  const [logOut] = useLogOutMutation();
-  const dispatch = useAppDispatch();
-
-  console.log("user info:", userInfo);
-
-  const handleLogout = async () => {
-    try {
-      await logOut(undefined).unwrap();
-      dispatch(authApi.util.resetApiState());
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  const location = useLocation();
 
   return (
-    <header className="container mx-auto border-b px-4 md:px-6">
+    <header className="container mx-auto border-b px-4 md:px-6 bg-background/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -65,77 +49,85 @@ export default function Navbar() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     d="M4 12L20 12"
-                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-in-out group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+                    className="origin-center transition-all duration-300 ease-in-out group-aria-expanded:rotate-45"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                    className="origin-center translate-y-[7px] transition-all duration-300 ease-in-out group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
                   />
                 </svg>
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-36 p-1 md:hidden">
+
+            {/* Mobile menu */}
+            <PopoverContent align="start" className="w-40 p-2 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                  {navigationLinks.map((link, index) => (
-                    <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink className="py-1.5">
-                        <Link to={link.href}>{link.label}</Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
+                <NavigationMenuList className="flex-col items-start gap-1">
+                  {navigationLinks.map((link, index) => {
+                    const isActive = location.pathname === link.href;
+                    return (
+                      <NavigationMenuItem key={index} className="w-full">
+                        <NavigationMenuLink
+                          asChild
+                          className={`block w-full rounded-md px-2 py-1.5 text-sm transition-all duration-200 ${
+                            isActive
+                              ? "bg-primary text-white font-semibold"
+                              : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                          }`}
+                        >
+                          <Link to={link.href}>{link.label}</Link>
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    );
+                  })}
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
           </Popover>
-          {/* Main nav */}
+
+          {/* Desktop navigation */}
           <div className="flex items-center gap-6">
-            <a href="#" className="text-primary hover:text-primary/90">
+            <div className="text-primary hover:text-primary/90">
               <Logo />
-            </a>
-            {/* Navigation menu */}
+            </div>
+
             <NavigationMenu className="max-md:hidden">
-              <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    <NavigationMenuLink
-                      asChild
-                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                    >
-                      <Link to={link.href}> {link.label}</Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+              <NavigationMenuList className="gap-4">
+                {navigationLinks.map((link, index) => {
+                  const isActive = location.pathname === link.href;
+                  return (
+                    <NavigationMenuItem key={index}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to={link.href}
+                          className={`relative py-1.5 font-medium transition-colors duration-300 ${
+                            isActive
+                              ? "text-primary after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:rounded-full"
+                              : "text-muted-foreground hover:text-primary"
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  );
+                })}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
         </div>
+
         {/* Right side */}
         <div className="flex items-center gap-2">
           <ModeToggle />
-
-          {userInfo?.data?.email && (
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="text-sm"
-            >
-              Logout
-            </Button>
-          )}
-          {!userInfo?.data?.email && (
-            <Button asChild className="text-sm">
-              <Link to="/login">Login</Link>
-            </Button>
-          )}
+          <UserMenu />
         </div>
       </div>
     </header>

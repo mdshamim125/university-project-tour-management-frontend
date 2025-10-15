@@ -1,112 +1,117 @@
 import Logo from "@/assets/icons/Logo";
+import { Link } from "react-router";
 
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-900">
+    <footer className="bg-white dark:bg-gray-900 border-t">
       <div className="container p-6 mx-auto">
-        <div className="lg:flex">
-          <div className="w-full -mx-6 lg:w-2/5">
-            <div className="px-6">
-              <a href="#">
+        <div className="">
+          {/* Footer Links */}
+          <div className="">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 justify-between items-center gap-8">
+              {/* Quick Links */}
+              <div className="text-start">
                 <Logo />
-              </a>
-
-              <p className="max-w-sm mt-2 text-gray-500 dark:text-gray-400">
-                Join 31,000+ others and never miss out on new tips, tutorials,
-                and more.
-              </p>
-
-              <div className="flex mt-6 -mx-2"></div>
-            </div>
-          </div>
-
-          <div className="mt-6 lg:mt-0 lg:flex-1">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {/* About */}
-              <div>
-                <h3 className="text-gray-700 uppercase dark:text-white">
-                  About
-                </h3>
-                <a
-                  href="#"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
-                >
-                  Company
-                </a>
-                <a
-                  href="#"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
-                >
-                  Community
-                </a>
-                <a
-                  href="#"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
-                >
-                  Careers
-                </a>
               </div>
 
-              {/* Blog */}
+              {/* <p className="">
+                  Tour Management — Explore, book, and create unforgettable
+                  journeys with ease.
+                </p> */}
+
               <div>
-                <h3 className="text-gray-700 uppercase dark:text-white">
-                  Blog
+                <h3 className="text-gray-700  uppercase dark:text-white font-semibold">
+                  Quick Links
                 </h3>
-                <a
-                  href="#"
+                <Link
+                  to="/"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Tech
-                </a>
-                <a
-                  href="#"
+                  Home
+                </Link>
+                <Link
+                  to="/tours"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Music
-                </a>
-                <a
-                  href="#"
+                  All Tours
+                </Link>
+                <Link
+                  to="/blogs"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Videos
-                </a>
+                  Blogs
+                </Link>
+                <Link
+                  to="/contact"
+                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                >
+                  Contact
+                </Link>
               </div>
 
-              {/* Products */}
+              {/* Explore */}
               <div>
-                <h3 className="text-gray-700 uppercase dark:text-white">
-                  Products
+                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
+                  Explore
                 </h3>
-                <a
-                  href="#"
+                <Link
+                  to="/destinations"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Mega Cloud
-                </a>
-                <a
-                  href="#"
+                  Destinations
+                </Link>
+                <Link
+                  to="/packages"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Aperion UI
-                </a>
-                <a
-                  href="#"
+                  Tour Packages
+                </Link>
+                <Link
+                  to="/gallery"
                   className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
                 >
-                  Meraki UI
-                </a>
+                  Gallery
+                </Link>
+              </div>
+
+              {/* Resources */}
+              <div>
+                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
+                  Resources
+                </h3>
+                <Link
+                  to="/faq"
+                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                >
+                  FAQ
+                </Link>
+                <Link
+                  to="/terms"
+                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                >
+                  Terms & Conditions
+                </Link>
+                <Link
+                  to="/privacy"
+                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                >
+                  Privacy Policy
+                </Link>
               </div>
 
               {/* Contact */}
               <div>
-                <h3 className="text-gray-700 uppercase dark:text-white">
-                  Contact
+                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
+                  Contact Us
                 </h3>
-                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                  +1 526 654 8965
+                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  +880 1710 534 833
                 </span>
-                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                  example@email.com
+                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  support@tourmanagement.com
+                </span>
+                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Rangpur, Bangladesh
                 </span>
               </div>
             </div>
@@ -115,10 +120,38 @@ export default function Footer() {
 
         <hr className="h-px my-6 bg-gray-200 border-none dark:bg-gray-700" />
 
-        <div>
+        {/* Copyright */}
+        <div className="flex flex-col items-center justify-center gap-3 md:flex-row">
           <p className="text-center text-gray-500 dark:text-gray-400">
-            © Brand 2020 - All rights reserved
+            © {new Date().getFullYear()} Tour Management — All rights reserved.
           </p>
+
+          <div className="flex gap-4">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-primary transition-colors"
+            >
+              <i className="ri-facebook-fill text-lg"></i>
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-primary transition-colors"
+            >
+              <i className="ri-instagram-line text-lg"></i>
+            </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-primary transition-colors"
+            >
+              <i className="ri-twitter-x-line text-lg"></i>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
