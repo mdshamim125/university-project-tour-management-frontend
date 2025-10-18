@@ -50,7 +50,10 @@ export default function UserMenu() {
   console.log(nameLetter);
 
   const handleDashboardRedirect = () => {
-    if (userInfo?.data?.role === "ADMIN") {
+    if (
+      userInfo?.data?.role === "ADMIN" ||
+      userInfo?.data?.role === "SUPER_ADMIN"
+    ) {
       navigate("/admin");
     } else if (userInfo?.data?.role === "USER") {
       navigate("/user"); // default user dashboard

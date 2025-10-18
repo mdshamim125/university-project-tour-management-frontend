@@ -1,3 +1,4 @@
+import type { role } from "@/constants/role";
 import type { ComponentType } from "react";
 export interface IResponse<T> {
   statusCode: number;
@@ -15,7 +16,7 @@ export interface ISidebarItem {
   }[];
 }
 
-export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER";
+export type TRole = keyof typeof role | (typeof role)[keyof typeof role];
 
 export type BorrowStatus = "borrowed" | "returned";
 
@@ -31,7 +32,6 @@ export interface IBorrow {
   createdAt?: string; // ISO date string, optional
   updatedAt?: string; // ISO date string, optional
 }
-
 
 export type TUser = {
   _id: string;
