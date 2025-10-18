@@ -12,6 +12,7 @@ export interface ISidebarItem {
   items: {
     title: string;
     url: string;
+    icon: ComponentType;
     component: ComponentType;
   }[];
 }

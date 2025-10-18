@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -19,45 +18,55 @@ import type { TRole } from "@/type";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 
-// This is sample data.
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userInfo } = useUserInfoQuery(undefined);
   const navigate = useNavigate();
+
   const data = {
     navMain: getSidebarItems(userInfo?.data?.role as TRole),
   };
-  console.log("Sidebar userInfo:", userInfo);
-  const handleGoHome = () => {
-    navigate("/");
-  };
+
+  const handleGoHome = () => navigate("/");
+
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="m-4" onClick={handleGoHome}>
+      <SidebarHeader onClick={handleGoHome} className="cursor-pointer">
         <Logo />
       </SidebarHeader>
+
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item:any) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+        {/* Sidebar groups (each section) */}
+        {data.navMain.map((group: any) => (
+          <SidebarGroup key={group.title}>
+            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+
             <SidebarGroupContent>
               <SidebarMenu>
-                {item.items.map((item:any) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link to={item.url}>{item.title}</Link>
-                    </SidebarMenuButton>
-                    <SidebarMenuButton asChild>
-                      {/* <Link to={"/"}>LogOut</Link> */}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {group.items.map((item: any) => {
+                  const Icon = item.icon; //  dynamic Lucide icon
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          to={item.url}
+                          className="flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                        >
+                          {/* Only render icon if it exists */}
+                          {Icon && (
+                            <Icon size={18} className="text-muted-foreground" />
+                          )}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   );
