@@ -15,7 +15,7 @@ export interface ISidebarItem {
   }[];
 }
 
-export type TRole = "ADMIN" | "USER";
+export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER";
 
 export type BorrowStatus = "borrowed" | "returned";
 
@@ -38,22 +38,6 @@ export type TUser = {
   name: string;
   email: string;
   role: "USER" | "ADMIN" | "SUPER_ADMIN" | string;
-  isActive: "ACTIVE" | "BLOCKED" | string;
+  isActive: "ACTIVE" | "INACTIVE" | "BLOCKED" | string;
   isVerified?: boolean;
 };
-
-
-// Define the type for borrowed book
-// export interface BorrowedBook {
-//   data: {
-//     userId: string;
-//     bookId: {
-//       _id: string;
-//       title: string;
-//       author: string;
-//     };
-//     dueDate: string;
-//     status: string;
-//     quantity: number;
-//   };
-// }

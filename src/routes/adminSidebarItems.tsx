@@ -1,44 +1,39 @@
-
+import AddDivision from "@/pages/Admin/AddDivision";
+import AddTour from "@/pages/Admin/AddTour";
+import AddTourType from "@/pages/Admin/AddTourType";
+import Analytics from "@/pages/Admin/Analytics";
 import type { ISidebarItem } from "@/type";
+
+
 export const adminSidebarItems: ISidebarItem[] = [
   {
-    title: "Admin Dashboard",
+    title: "Dashboard",
     items: [
-      // {
-      //   title: "overview",
-      //   url: "/admin/overview",
-      //   component: AdminOverview,
-      // },
+      {
+        title: "Analytics",
+        url: "/admin/analytics",
+        component: Analytics,
+      },
     ],
   },
   {
-    title: "Book Management",
+    title: "Tour Management",
     items: [
-    //   {
-    //     title: "Add Book",
-    //     url: "/admin/add-book",
-    //     component: AddBook,
-    //   },
-    //   {
-    //     title: "View Books",
-    //     url: "/admin/all-books",
-    //     component: ViewBooks,
-    //   },
-    //   {
-    //     title: "View Borrowed Books",
-    //     url: "/admin/borrowed-books",
-    //     component: AllBorrowedBooks,
-    //   },
-    ],
-  },
-  {
-    title: "User Management",
-    items: [
-    //   {
-    //     title: "Manage Users",
-    //     url: "/admin/manage-users",
-    //     component: ManageUsers,
-    //   },
+      {
+        title: "Add Tour Type",
+        url: "/admin/add-tour-type",
+        component: AddTourType,
+      },
+      {
+        title: "Add Division",
+        url: "/admin/add-division",
+        component: AddDivision,
+      },
+      {
+        title: "Add Tour",
+        url: "/admin/add-tour",
+        component: AddTour,
+      },
     ],
   },
 ];

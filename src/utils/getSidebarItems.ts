@@ -7,7 +7,7 @@ export const getSidebarItems = (userRole: TRole) => {
   //custom for preventing error
 
   switch (userRole) {
-    case role.admin:
+    case role.admin || role.super_admin:
       return [...adminSidebarItems];
     case role.user:
       return [...userSidebarItems];
