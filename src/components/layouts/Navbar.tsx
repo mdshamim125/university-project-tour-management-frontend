@@ -14,6 +14,7 @@ import {
 import { ModeToggle } from "./ModeToggler";
 import { Link, useLocation } from "react-router";
 import UserMenu from "../user-menu";
+import { cn } from "@/lib/utils";
 
 const navigationLinks = [
   { href: "/", label: "Home" },
@@ -76,11 +77,15 @@ export default function Navbar() {
                       <NavigationMenuItem key={index} className="w-full">
                         <NavigationMenuLink
                           asChild
-                          className={`block w-full rounded-md px-2 py-1.5 text-sm transition-all duration-200 ${
+                          className={cn(
+                            "relative mx-2 rounded-md px-1 py-2 text-sm font-medium transition-all duration-300 ease-out",
+                            "hover:text-primary",
+                            // Underline effect
+                            "after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 after:ease-out",
                             isActive
-                              ? "bg-primary text-white font-semibold"
-                              : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-                          }`}
+                              ? "text-primary  font-semibold after:w-full" // Keep underline when active
+                              : "text-muted-foreground"
+                          )}
                         >
                           <Link to={link.href}>{link.label}</Link>
                         </NavigationMenuLink>
@@ -107,11 +112,15 @@ export default function Navbar() {
                       <NavigationMenuLink asChild>
                         <Link
                           to={link.href}
-                          className={`relative py-1.5 font-medium transition-colors duration-300 ${
+                          className={cn(
+                            "relative mx-2 rounded-md px-1 py-2 text-sm font-medium transition-all duration-300 ease-out",
+                            "hover:text-primary",
+                            // Underline effect
+                            "after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 after:ease-out",
                             isActive
-                              ? "text-primary after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:rounded-full"
-                              : "text-muted-foreground hover:text-primary"
-                          }`}
+                              ? "text-primary  font-semibold after:w-full" // Keep underline when active
+                              : "text-muted-foreground"
+                          )}
                         >
                           {link.label}
                         </Link>

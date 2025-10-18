@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,22 +21,71 @@ import Password from "@/components/ui/Password";
 import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import config from "@/config";
+import { useState } from "react";
+// const registerSchema = z
+//   .object({
+//     name: z
+//       .string()
+//       .min(3, {
+//         error: "Name is too short",
+//       })
+//       .max(50),
+//     email: z.email(),
+//     password: z.string().min(8, { error: "Password is too short" }),
+//     confirmPassword: z
+//       .string()
+//       .min(8, { error: "Confirm Password is too short" }),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Password do not match",
+//     path: ["confirmPassword"],
+//   });
+
 const registerSchema = z
   .object({
     name: z
       .string()
-      .min(3, {
-        error: "Name is too short",
-      })
-      .max(50),
-    email: z.email(),
-    password: z.string().min(8, { error: "Password is too short" }),
-    confirmPassword: z
+      .min(2, { message: "Name must be at least 2 characters long." })
+      .max(50, { message: "Name cannot exceed 50 characters." }),
+
+    email: z
       .string()
-      .min(8, { error: "Confirm Password is too short" }),
+      .email({ message: "Invalid email address format." })
+      .min(5, { message: "Email must be at least 5 characters long." })
+      .max(100, { message: "Email cannot exceed 100 characters." }),
+
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long." })
+      .regex(/^(?=.*[A-Z])/, {
+        message: "Password must contain at least 1 uppercase letter.",
+      })
+      .regex(/^(?=.*[!@#$%^&*])/, {
+        message: "Password must contain at least 1 special character.",
+      })
+      .regex(/^(?=.*\d)/, {
+        message: "Password must contain at least 1 number.",
+      }),
+
+    confirmPassword: z.string().min(8, {
+      message: "Confirm password must be at least 8 characters long.",
+    }),
+
+    phone: z
+      .string()
+      .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
+        message:
+          "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
+      })
+      .optional(),
+
+    address: z
+      .string()
+      .max(200, { message: "Address cannot exceed 200 characters." })
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password do not match",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
@@ -45,6 +95,7 @@ export function RegisterForm({
 }: React.ComponentProps<"div">) {
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -66,13 +117,15 @@ export function RegisterForm({
       password: values.password,
     };
     try {
+      setLoading(true);
       const result = await register(userInfo).unwrap();
       console.log(result);
       toast.success("User Created Successfully");
       navigate("/verify", { state: userInfo.email });
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to create user");
+    } catch (error: any) {
+      toast.error(error.data.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -165,8 +218,38 @@ export function RegisterForm({
                       </FormItem>
                     )}
                   />
-                  <Button className="w-full" type="submit">
-                    Submit
+                  <Button
+                    className="w-full flex items-center justify-center"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="mr-2 h-4 w-4 animate-spin"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          ></path>
+                        </svg>
+                        Registering...
+                      </>
+                    ) : (
+                      "Register"
+                    )}
                   </Button>
                 </form>
               </Form>

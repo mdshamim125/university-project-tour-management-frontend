@@ -21,6 +21,7 @@ import Password from "@/components/ui/Password";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import config from "@/config";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.email(),
@@ -33,6 +34,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,6 +53,7 @@ export function LoginForm({
     };
 
     try {
+      setLoading(true);
       const result = await login(userInfo).unwrap();
 
       console.log(result.success);
@@ -72,40 +75,10 @@ export function LoginForm({
       // Safely extract message from backend response
       const message = err?.data?.message || "Something went wrong";
 
-      // // Handle different backend responses
-      // if (message === "User does not exist") {
-      //   toast.error("User does not exist. Please register first.");
-      //   return;
-      // }
-
-      // if (message === "User is not verified") {
-      //   toast.error("Your account is not verified. Please verify your email.");
-      //   navigate("/verify", { state: { email: userInfo.email } });
-      //   return;
-      // }
-
-      // if (message === "Password does not match") {
-      //   toast.error("Invalid credentials. Please check your password.");
-      //   return;
-      // }
-
-      // if (message === "Missing credentials") {
-      //   toast.error("Please enter your email and password.");
-      //   return;
-      // }
-
-      // if (
-      //   message ===
-      //   "You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password."
-      // ) {
-      //   toast.error(
-      //     "You have authenticated through Google. Please login using Google."
-      //   );
-      //   return;
-      // }
-
       // Fallback error message
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -166,8 +139,38 @@ export function LoginForm({
                       </FormItem>
                     )}
                   />
-                  <Button className="w-full" type="submit">
-                    Submit
+                  <Button
+                    className="w-full flex items-center justify-center"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="mr-2 h-4 w-4 animate-spin"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          ></path>
+                        </svg>
+                        Logging in...
+                      </>
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </form>
               </Form>
