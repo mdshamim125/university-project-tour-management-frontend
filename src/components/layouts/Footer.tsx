@@ -4,154 +4,181 @@ import { Link } from "react-router";
 export default function Footer() {
   return (
     <footer className="bg-white dark:bg-gray-900 border-t">
-      <div className="container p-6 mx-auto">
-        <div className="">
-          {/* Footer Links */}
-          <div className="">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 justify-between items-center gap-8">
-              {/* Quick Links */}
-              <div className="text-start">
-                <Logo />
-              </div>
+      <div className="container mx-auto px-4 py-10">
+        {/* Footer Links */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          {/* Logo Section */}
+          <div className="flex flex-col items-start">
+            <div className="text-start">
+              <Logo />
+            </div>
+            {/* Optional short description (can be uncommented if needed) */}
+            {/* <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 max-w-xs">
+              Tour Management — Explore, book, and create unforgettable journeys with ease.
+            </p> */}
+          </div>
 
-              {/* <p className="">
-                  Tour Management — Explore, book, and create unforgettable
-                  journeys with ease.
-                </p> */}
-
-              <div>
-                <h3 className="text-gray-700  uppercase dark:text-white font-semibold">
-                  Quick Links
-                </h3>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-gray-800 uppercase dark:text-white font-semibold mb-2">
+              Quick Links
+            </h3>
+            <ul className="space-y-1">
+              <li>
                 <Link
                   to="/"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Home
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/tours"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   All Tours
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/blogs"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Blogs
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/contact"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Contact
                 </Link>
-              </div>
+              </li>
+            </ul>
+          </div>
 
-              {/* Explore */}
-              <div>
-                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
-                  Explore
-                </h3>
+          {/* Explore */}
+          <div>
+            <h3 className="text-gray-800 uppercase dark:text-white font-semibold mb-2">
+              Explore
+            </h3>
+            <ul className="space-y-1">
+              <li>
                 <Link
                   to="/destinations"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Destinations
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/packages"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Tour Packages
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/gallery"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Gallery
                 </Link>
-              </div>
+              </li>
+            </ul>
+          </div>
 
-              {/* Resources */}
-              <div>
-                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
-                  Resources
-                </h3>
+          {/* Resources */}
+          <div>
+            <h3 className="text-gray-800 uppercase dark:text-white font-semibold mb-2">
+              Resources
+            </h3>
+            <ul className="space-y-1">
+              <li>
                 <Link
                   to="/faq"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   FAQ
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/terms"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Terms & Conditions
                 </Link>
+              </li>
+              <li>
                 <Link
                   to="/privacy"
-                  className="block mt-2 text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   Privacy Policy
                 </Link>
-              </div>
+              </li>
+            </ul>
+          </div>
 
-              {/* Contact */}
-              <div>
-                <h3 className="text-gray-700 uppercase dark:text-white font-semibold">
-                  Contact Us
-                </h3>
-                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  +880 1710 534 833
-                </span>
-                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  support@tourmanagement.com
-                </span>
-                <span className="block mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Rangpur, Bangladesh
-                </span>
-              </div>
+          {/* Contact */}
+          <div>
+            <h3 className="text-gray-800 uppercase dark:text-white font-semibold mb-2">
+              Contact Us
+            </h3>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                +880 1710 534 833
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                support@tourmanagement.com
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Rangpur, Bangladesh
+              </p>
             </div>
           </div>
         </div>
 
-        <hr className="h-px my-6 bg-gray-200 border-none dark:bg-gray-700" />
+        {/* Divider */}
+        <hr className="h-px my-8 bg-gray-200 border-none dark:bg-gray-700" />
 
-        {/* Copyright */}
-        <div className="flex flex-col items-center justify-center gap-3 md:flex-row">
-          <p className="text-center text-gray-500 dark:text-gray-400">
+        {/* Copyright & Social */}
+        <div>
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400">
             © {new Date().getFullYear()} Tour Management — All rights reserved.
           </p>
 
-          <div className="flex gap-4">
+          {/* <div className="flex gap-5">
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors"
+              className="text-gray-500 hover:text-primary transition-colors text-lg"
             >
-              <i className="ri-facebook-fill text-lg"></i>
+              <i className="ri-facebook-fill"></i>
             </a>
             <a
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors"
+              className="text-gray-500 hover:text-primary transition-colors text-lg"
             >
-              <i className="ri-instagram-line text-lg"></i>
+              <i className="ri-instagram-line"></i>
             </a>
             <a
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors"
+              className="text-gray-500 hover:text-primary transition-colors text-lg"
             >
-              <i className="ri-twitter-x-line text-lg"></i>
+              <i className="ri-twitter-x-line"></i>
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 
 import {
   Form,
@@ -190,8 +190,11 @@ function Verify() {
               We will send you an OTP at {email}
             </CardDescription>
           </CardHeader>
-          <CardFooter className="justify-end">
-            <Button onClick={handleSendOtp} form="otp-form" type="submit">
+          <CardFooter className="">
+             <Link to="/" className="mr-auto">
+              cancel
+            </Link>
+            <Button onClick={handleSendOtp} className="cursor-pointer" form="otp-form" type="submit">
               confirm
             </Button>
           </CardFooter>

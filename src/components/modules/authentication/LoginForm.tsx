@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,55 +45,67 @@ export function LoginForm({
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     const userInfo = {
       email: values.email,
       password: values.password,
     };
-    console.log(userInfo);
+
     try {
       const result = await login(userInfo).unwrap();
+
+      console.log(result.success);
+
       if (result.success) {
-        toast.success("Logged in successfully");
-        navigate("/");
+        if (result.data.user.isVerified) {
+          toast.success("Login successful!");
+          navigate("/");
+        } else {
+          toast.error(
+            "Your account is not verified. Please verify your email."
+          );
+          navigate("/verify", { state: userInfo.email });
+        }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
 
-      // if (err.data.message === "User does not exist") {
-      //   toast.error("User does not exist");
+      // Safely extract message from backend response
+      const message = err?.data?.message || "Something went wrong";
+
+      // // Handle different backend responses
+      // if (message === "User does not exist") {
+      //   toast.error("User does not exist. Please register first.");
       //   return;
       // }
 
-      // if (err.data.message === "Missing credentials") {
-      //   toast.error("Please enter your email and password");
+      // if (message === "User is not verified") {
+      //   toast.error("Your account is not verified. Please verify your email.");
+      //   navigate("/verify", { state: { email: userInfo.email } });
+      //   return;
+      // }
+
+      // if (message === "Password does not match") {
+      //   toast.error("Invalid credentials. Please check your password.");
+      //   return;
+      // }
+
+      // if (message === "Missing credentials") {
+      //   toast.error("Please enter your email and password.");
       //   return;
       // }
 
       // if (
-      //   err.data.message ===
+      //   message ===
       //   "You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password."
       // ) {
       //   toast.error(
-      //     "You have authenticated through Google. Please login with Google."
+      //     "You have authenticated through Google. Please login using Google."
       //   );
       //   return;
       // }
 
-      // if (err.data.message === "Password does not match") {
-      //   toast.error("Invalid credentials");
-      //   return;
-      // }
-
-      // if (err.data.message === "Password does not match") {
-      //   toast.error("Invalid credentials");
-      // }
-
-      // if (err.data.message === "User is not verified") {
-      //   toast.error("Your account is not verified");
-      //   navigate("/verify", { state: userInfo.email });
-      // }
+      // Fallback error message
+      toast.error(message);
     }
   }
 
