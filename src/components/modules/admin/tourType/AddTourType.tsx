@@ -46,7 +46,7 @@ export function AddTourTypeModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <form>
         <DialogTrigger asChild>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center cursor-pointer gap-2">
             <Plus size={18} />
             Add Tour Type
           </Button>

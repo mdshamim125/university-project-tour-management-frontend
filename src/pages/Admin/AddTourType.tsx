@@ -51,80 +51,93 @@ export default function AddTourType() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-5">
-      <div className="flex justify-between my-8">
-        <h1 className="text-xl font-semibold">List of Tour Types</h1>
-        <AddTourTypeModal />
-      </div>
-      <div className="border border-muted rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
-              <TableHead className="text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.data?.map((item: { _id: string; name: string }) => (
-              <TableRow>
-                <TableCell className="font-medium w-full">
-                  {item?.name}
-                </TableCell>
-                <TableCell>
-                  <DeleteConfirmation
-                    onConfirm={() => handleRemoveTourType(item._id)}
-                  >
-                    <Button size="sm">
-                      <Trash2 />
-                    </Button>
-                  </DeleteConfirmation>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      {totalPage > 1 && (
-        <div className="flex justify-end mt-4">
-          <div>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setCurrentPage((prev) => prev - 1)}
-                    className={
-                      currentPage === 1
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPage }, (_, index) => index + 1).map(
-                  (page) => (
-                    <PaginationItem
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      <PaginationLink isActive={currentPage === page}>
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage((prev) => prev + 1)}
-                    className={
-                      currentPage === totalPage
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+      <div className="flex flex-col justify-between min-h-[calc(100vh-120px)]">
+        <div>
+          <div className="flex justify-between my-8">
+            <h1 className="text-xl font-semibold">List of Tour Types</h1>
+            <AddTourTypeModal />
+          </div>
+          <div className="border border-muted rounded-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Name</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.data?.map((item: { _id: string; name: string }) => (
+                  <TableRow>
+                    <TableCell className="font-medium w-full">
+                      {item?.name}
+                    </TableCell>
+                    <TableCell>
+                      <DeleteConfirmation
+                        onConfirm={() => handleRemoveTourType(item._id)}
+                      >
+                        <Button size="sm">
+                          <Trash2 />
+                        </Button>
+                      </DeleteConfirmation>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
-      )}
+        <div>
+          {totalPage > 1 && (
+            <div className="flex justify-end mt-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPage }, (_, i) => i + 1).map(
+                    (page) => (
+                      <PaginationItem
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        <PaginationLink
+                          className={`cursor-pointer ${
+                            currentPage === page
+                              ? "bg-primary text-white"
+                              : "hover:bg-muted"
+                          }`}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                      className={
+                        currentPage === totalPage
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

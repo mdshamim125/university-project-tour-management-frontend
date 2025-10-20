@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAddDivisionMutation } from "@/redux/features/division/division.api";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -55,8 +56,8 @@ export function AddDivisionModal() {
       console.log(res);
       toast.success("Division Added");
       setOpen(false);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to add division");
     } finally {
       setLoading(false);
     }
@@ -65,7 +66,10 @@ export function AddDivisionModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Division</Button>
+        <Button className="flex cursor-pointer items-center gap-2">
+          <Plus size={18} />
+          Add Division
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
