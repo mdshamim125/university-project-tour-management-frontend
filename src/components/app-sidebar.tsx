@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import Logo from "@/assets/icons/Logo";
 import { Link, useNavigate } from "react-router";
-import type { TRole } from "@/type";
+import type { TRole } from "@/types";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 

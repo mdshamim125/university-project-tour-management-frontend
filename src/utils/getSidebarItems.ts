@@ -1,4 +1,4 @@
-import type { TRole } from "@/type";
+import type { TRole } from "@/types";
 import { adminSidebarItems } from "@/routes/adminSidebarItems";
 import { role } from "@/constants/role";
 import { userSidebarItems } from "@/routes/userSidebarItems.";
