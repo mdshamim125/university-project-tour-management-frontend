@@ -19,19 +19,15 @@ export interface ISidebarItem {
 
 export type TRole = keyof typeof role | (typeof role)[keyof typeof role];
 
-export type BorrowStatus = "borrowed" | "returned";
-
-// Frontend version of Borrow
-export interface IBorrow {
-  _id?: string; // borrow record ID
-  userId: string; // user ID as string
-  bookId: string; // book ID as string
-  quantity: number;
-  status: BorrowStatus;
-  dueDate: string; // ISO date string
-  returnedAt?: string; // ISO date string, optional
-  createdAt?: string; // ISO date string, optional
-  updatedAt?: string; // ISO date string, optional
+export interface IErrorResponse {
+  success: boolean;
+  message: string;
+  errorSources?: ErrorSource[];
+  err?: {
+    issues: ZodIssue[];
+    name: string;
+  };
+  stack?: string;
 }
 
 export type TUser = {

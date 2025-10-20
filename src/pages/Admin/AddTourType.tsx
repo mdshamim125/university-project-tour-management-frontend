@@ -24,6 +24,10 @@ import {
   useRemoveTourTypeMutation,
 } from "@/redux/features/tour/tour.api";
 import { AddTourTypeModal } from "@/components/modules/admin/tourType/AddTourType";
+// import {
+//   useGetTourTypesQuery,
+//   useRemoveTourTypeMutation,
+// } from "@/redux/features/Tour/tour.api";
 
 export default function AddTourType() {
   const [currentPage, setCurrentPage] = useState(1);
