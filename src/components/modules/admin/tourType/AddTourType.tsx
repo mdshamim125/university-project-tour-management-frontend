@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAddTourTypeMutation } from "@/redux/features/auth/tour/tour.api";
+import { useAddTourTypeMutation } from "@/redux/features/tour/tour.api";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -47,7 +47,7 @@ export function AddTourTypeModal() {
       <form>
         <DialogTrigger asChild>
           <Button className="flex items-center gap-2">
-            <Plus size={18} /> 
+            <Plus size={18} />
             Add Tour Type
           </Button>
         </DialogTrigger>

@@ -1,5 +1,9 @@
-const AddDivision = () => {
-  return <div>Add Division Page</div>;
-};
+import { AddDivisionModal } from "@/components/modules/admin/division/AddDivision";
 
-export default AddDivision;
+export default function AddDivision() {
+  return (
+    <div>
+      <AddDivisionModal />
+    </div>
+  );
+}

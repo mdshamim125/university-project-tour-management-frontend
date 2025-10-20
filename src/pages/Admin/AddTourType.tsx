@@ -22,7 +22,7 @@ import { useState } from "react";
 import {
   useGetTourTypesQuery,
   useRemoveTourTypeMutation,
-} from "@/redux/features/auth/tour/tour.api";
+} from "@/redux/features/tour/tour.api";
 import { AddTourTypeModal } from "@/components/modules/admin/tourType/AddTourType";
 
 export default function AddTourType() {
