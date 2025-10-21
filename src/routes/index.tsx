@@ -15,12 +15,17 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { userSidebarItems } from "./userSidebarItems.";
 import EditTour from "@/pages/Admin/EditTour";
+import HomePage from "@/pages/HomePage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
     children: [
+      {
+        index: true,
+        Component: HomePage,
+      },
       {
         path: "blogs",
         Component: Blogs,
@@ -51,14 +56,7 @@ export const router = createBrowserRouter([
     path: "/verify",
     Component: Verify,
   },
-  // {
-  //   Component: withAuth(DashboardLayout, role.super_admin as TRole),
-  //   path: "/admin",
-  //   children: [
-  //     { index: true, element: <Navigate to="/admin/analytics" /> },
-  //     ...generateRoutes(adminSidebarItems),
-  //   ],
-  // },
+
   {
     Component: withAuth(DashboardLayout, [
       role.super_admin,
@@ -70,8 +68,8 @@ export const router = createBrowserRouter([
       ...generateRoutes(adminSidebarItems),
       {
         path: "/admin/tour/edit/:id",
-        Component: EditTour
-      }
+        Component: EditTour,
+      },
     ],
   },
   {
