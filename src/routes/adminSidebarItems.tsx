@@ -1,9 +1,11 @@
-import { BarChart3, MapPin, PlaneTakeoff, Layers } from "lucide-react"; // import any icons you like
+import { BarChart3, MapPin, PlaneTakeoff, Layers, ClipboardList } from "lucide-react"; // import any icons you like
 import AddDivision from "@/pages/Admin/AddDivision";
 import AddTour from "@/pages/Admin/AddTour";
 import AddTourType from "@/pages/Admin/AddTourType";
 import Analytics from "@/pages/Admin/Analytics";
 import type { ISidebarItem } from "@/types";
+import ManageTours from "@/pages/Admin/ManageTours";
+// import EditTour from "@/pages/Admin/EditTour";
 
 export const adminSidebarItems: ISidebarItem[] = [
   {
@@ -38,6 +40,18 @@ export const adminSidebarItems: ISidebarItem[] = [
         icon: PlaneTakeoff,
         component: AddTour,
       },
+      {
+        title: "Manage Tours",
+        url: "/admin/manage-tours",
+        icon: ClipboardList,
+        component: ManageTours,
+      },
+      // {
+      //   title: "Edit Tour",
+      //   url: "/admin/tours/edit/:id",
+      //   icon: ClipboardList,
+      //   component: EditTour,
+      // }
     ],
   },
 ];

@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "@/redux/baseApi";
-import type { IResponse } from "@/types";
-import type { ITourPackage } from "@/types/tour/tour.type";
+import type { IResponseWithMeta, ITourPackageResponse } from "@/types";
 
 export const tourApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,14 +36,39 @@ export const tourApi = baseApi.injectEndpoints({
       providesTags: ["TOUR"],
       transformResponse: (response) => response.data,
     }),
-    getAllTours: builder.query<ITourPackage[], unknown>({
+    getAllTours: builder.query<
+      IResponseWithMeta<ITourPackageResponse[]>,
+      Record<string, any>
+    >({
       query: (params) => ({
         url: "/tour",
         method: "GET",
-        params: params,
+        params,
       }),
       providesTags: ["TOUR"],
-      transformResponse: (response: IResponse<ITourPackage[]>) => response.data,
+    }),
+    removeTour: builder.mutation({
+      query: (tourId) => ({
+        url: `/tour/${tourId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["TOUR"],
+    }),
+
+    updateTour: builder.mutation({
+      query: ({ id, ...tourData }) => ({
+        url: `/tour/${id}`,
+        method: "PATCH", // or PUT if your backend uses PUT for full update
+        data: tourData,
+      }),
+      invalidatesTags: ["TOUR"], // invalidate TOUR cache to refresh data
+    }),
+    getTourById: builder.query<ITourPackageResponse, string>({
+      query: (id) => ({
+        url: `/tour/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["TOUR"],
     }),
   }),
 });
@@ -54,4 +79,7 @@ export const {
   useRemoveTourTypeMutation,
   useAddTourMutation,
   useGetAllToursQuery,
+  useRemoveTourMutation,
+  useUpdateTourMutation,
+  useGetTourByIdQuery,
 } = tourApi;
