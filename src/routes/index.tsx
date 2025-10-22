@@ -16,6 +16,7 @@ import { adminSidebarItems } from "./adminSidebarItems";
 import { userSidebarItems } from "./userSidebarItems.";
 import EditTour from "@/pages/Admin/EditTour";
 import HomePage from "@/pages/HomePage";
+import TourDetails from "@/pages/TourDetails";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
       {
         path: "tours",
         Component: AllTours,
+      },
+      {
+        path: "tour/:id",
+        Component: TourDetails,
       },
       {
         path: "about",

@@ -63,12 +63,13 @@ export const tourApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["TOUR"], // invalidate TOUR cache to refresh data
     }),
-    getTourById: builder.query<ITourPackageResponse, string>({
+    getTourById: builder.query<any, string>({
       query: (id) => ({
         url: `/tour/${id}`,
         method: "GET",
       }),
       providesTags: ["TOUR"],
+      transformResponse: (response: any) => response?.data?.data?.[0],
     }),
   }),
 });
