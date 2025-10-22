@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,13 +17,17 @@ import {
 } from "@/redux/features/tour/tour.api";
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
 import TourCard from "@/components/TourCard";
+import { useSearchParams } from "react-router";
 
 export default function AllTours() {
-  // ---------- State ----------
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterDivision, setFilterDivision] = useState("");
-  const [filterTourType, setFilterTourType] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  //   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // ---------- Extract params ----------
+  const searchTerm = searchParams.get("searchTerm") || "";
+  const filterDivision = searchParams.get("division") || "";
+  const filterTourType = searchParams.get("tourType") || "";
+  const currentPage = Number(searchParams.get("page")) || 1;
   const limit = 6;
 
   // ---------- Queries ----------
@@ -35,8 +36,8 @@ export default function AllTours() {
   const query: Record<string, string> = {
     page: currentPage.toString(),
     limit: limit.toString(),
-    searchTerm,
   };
+  if (searchTerm) query.searchTerm = searchTerm;
   if (filterDivision) query.division = filterDivision;
   if (filterTourType) query.tourType = filterTourType;
 
@@ -45,20 +46,26 @@ export default function AllTours() {
   const totalPage = data?.meta?.totalPage || 1;
 
   // ---------- Handlers ----------
+  const updateParams = (updates: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    setSearchParams(params);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1);
+    updateParams({ searchTerm, page: "1" });
   };
 
-  const handleReset = () => {
-    setSearchTerm("");
-    setFilterDivision("");
-    setFilterTourType("");
-    setCurrentPage(1);
+  const handleReset = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setSearchParams(new URLSearchParams());
   };
 
-  console.log(tours);
-
+  // ---------- Render ----------
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-semibold mb-8 text-center">All Tours</h1>
@@ -71,17 +78,16 @@ export default function AllTours() {
         <Input
           placeholder="Search by title or location..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => updateParams({ searchTerm: e.target.value })}
           className="w-60"
         />
 
         {/* Division Filter */}
         <select
           value={filterDivision}
-          onChange={(e) => {
-            setFilterDivision(e.target.value);
-            setCurrentPage(1);
-          }}
+          onChange={(e) =>
+            updateParams({ division: e.target.value, page: "1" })
+          }
           className="border border-gray-300 rounded-md p-2 w-48"
         >
           <option value="">All Divisions</option>
@@ -95,10 +101,9 @@ export default function AllTours() {
         {/* Tour Type Filter */}
         <select
           value={filterTourType}
-          onChange={(e) => {
-            setFilterTourType(e.target.value);
-            setCurrentPage(1);
-          }}
+          onChange={(e) =>
+            updateParams({ tourType: e.target.value, page: "1" })
+          }
           className="border border-gray-300 rounded-md p-2 w-48"
         >
           <option value="">All Tour Types</option>
@@ -109,10 +114,15 @@ export default function AllTours() {
           ))}
         </select>
 
-        {/* Always reserve space for Reset button (prevents layout shift) */}
+        {/* Reset Button */}
         <div className="w-28 flex justify-center">
           {searchTerm || filterDivision || filterTourType ? (
-            <Button className="p-5" variant="outline" onClick={handleReset}>
+            <Button
+              type="button" 
+              className="p-5"
+              variant="outline"
+              onClick={handleReset}
+            >
               Reset
             </Button>
           ) : (
@@ -124,15 +134,12 @@ export default function AllTours() {
       {/* 🔹 Tours Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[30vh]">
         {isFetching ? (
-          // Loader while fetching
           <div className="col-span-full flex justify-center items-center h-[30vh]">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : tours.length > 0 ? (
-          // Show tours
           tours.map((tour: any) => <TourCard key={tour._id} tour={tour} />)
         ) : (
-          // Show message if no tours
           <Card className="p-10 text-center text-gray-500 shadow-sm col-span-full">
             No tours found.
           </Card>
@@ -147,7 +154,9 @@ export default function AllTours() {
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    updateParams({
+                      page: (currentPage - 1).toString(),
+                    })
                   }
                   className={
                     currentPage === 1
@@ -161,7 +170,7 @@ export default function AllTours() {
                 (page) => (
                   <PaginationItem key={page}>
                     <PaginationLink
-                      onClick={() => setCurrentPage(page)}
+                      onClick={() => updateParams({ page: page.toString() })}
                       isActive={currentPage === page}
                       className={`cursor-pointer ${
                         currentPage === page
@@ -178,9 +187,12 @@ export default function AllTours() {
               <PaginationItem>
                 <PaginationNext
                   onClick={() =>
-                    setCurrentPage((prev) =>
-                      prev === totalPage ? prev : prev + 1
-                    )
+                    updateParams({
+                      page:
+                        currentPage === totalPage
+                          ? totalPage.toString()
+                          : (currentPage + 1).toString(),
+                    })
                   }
                   className={
                     currentPage === totalPage
