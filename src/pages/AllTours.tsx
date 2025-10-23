@@ -67,7 +67,7 @@ export default function AllTours() {
 
   // ---------- Render ----------
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-10">
+    <div className="container md:px-16 px-8 mx-auto py-10">
       <h1 className="text-3xl font-semibold mb-8 text-center">All Tours</h1>
 
       {/* 🔹 Filters */}
@@ -118,7 +118,7 @@ export default function AllTours() {
         <div className="w-28 flex justify-center">
           {searchTerm || filterDivision || filterTourType ? (
             <Button
-              type="button" 
+              type="button"
               className="p-5"
               variant="outline"
               onClick={handleReset}

@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAddTourTypeMutation } from "@/redux/features/Tour/tour.api";
+import { useAddTourTypeMutation } from "@/redux/features/tour/tour.api";
 // import { useAddTourTypeMutation } from "@/redux/features/tour/tour.api";
 import { Plus } from "lucide-react";
 import { useState } from "react";

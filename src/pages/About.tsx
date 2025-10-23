@@ -1,10 +1,11 @@
+import AboutSection from "@/components/modules/about/AboutSection";
 
 const About = () => {
-    return (
-        <div>
-            this is about page
-        </div>
-    );
+  return (
+    <div>
+      <AboutSection />
+    </div>
+  );
 };
 
 export default About;
