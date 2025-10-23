@@ -90,12 +90,4 @@ export interface ITourPackageResponse {
   updatedAt: string;
 }
 
-// export interface ITourPackageResponse {
-//   data: ITourPackage[];
-//   meta: {
-//     page: number;
-//     limit: number;
-//     total: number;
-//     totalPage: number;
-//   };
-// }
+
