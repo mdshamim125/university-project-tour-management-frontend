@@ -17,6 +17,10 @@ import { userSidebarItems } from "./userSidebarItems.";
 import EditTour from "@/pages/Admin/EditTour";
 import HomePage from "@/pages/HomePage";
 import TourDetails from "@/pages/TourDetails";
+import Bookings from "@/pages/User/Bookings";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentFail from "@/pages/PaymentFail";
+import PaymentCancel from "@/pages/PaymentCancel";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +44,10 @@ export const router = createBrowserRouter([
         Component: TourDetails,
       },
       {
+        path: "booking/:id",
+        Component: Bookings,
+      },
+      {
         path: "about",
         Component: About,
       },
@@ -54,6 +62,18 @@ export const router = createBrowserRouter([
       {
         path: "register",
         Component: Register,
+      },
+      {
+        path: "payment/success",
+        Component: PaymentSuccess,
+      },
+      {
+        path: "payment/fail",
+        Component: PaymentFail,
+      },
+      {
+        path: "payment/cancel",
+        Component: PaymentCancel,
       },
     ],
   },

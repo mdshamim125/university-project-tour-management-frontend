@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useGetTourByIdQuery } from "@/redux/features/tour/tour.api";
 import {
   Loader2,
@@ -154,7 +154,9 @@ export default function TourDetails() {
           {/* Buttons */}
           <div className="flex flex-wrap gap-4 mt-6">
             <Button className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all">
+              <Link to={`/booking/${tour._id}`}>
               Book Now
+              </Link>
             </Button>
             <Button
               variant="outline"

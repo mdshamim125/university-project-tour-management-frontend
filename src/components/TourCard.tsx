@@ -71,7 +71,7 @@ export default function TourCard({ tour }: TourCardProps) {
           </Link>
 
           <Button className="bg-green-600 hover:bg-green-700 text-white transition-all">
-            Book Now
+            <Link to={`/booking/${tour._id}`}>Book Now</Link>
           </Button>
         </div>
       </CardContent>
