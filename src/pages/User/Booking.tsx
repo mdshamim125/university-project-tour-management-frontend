@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useCreateBookingMutation } from "@/redux/features/booking/booking.api";
 
-export default function Bookings() {
+export default function Booking() {
   const { id } = useParams();
 
   // Fetch tour by ID

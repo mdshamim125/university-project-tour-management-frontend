@@ -31,6 +31,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   useSendOtpMutation,
+  useUserInfoQuery,
   useVerityOtpMutation,
 } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
@@ -50,6 +51,7 @@ function Verify() {
   const [verifyOtp] = useVerityOtpMutation();
   const [timer, setTimer] = useState(5);
   const navigate = useNavigate();
+  const { data: userInfo } = useUserInfoQuery(undefined);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -57,6 +59,11 @@ function Verify() {
       pin: "",
     },
   });
+
+  // console.log(userInfo);
+  if (userInfo?.data?.isVerified) {
+    navigate("/login");
+  }
 
   // ✅ Fixed: show toast result in both success and error
   const handleSendOtp = async () => {
@@ -90,7 +97,7 @@ function Verify() {
       const result = await verifyOtp(userInfo).unwrap();
       if (result.success) {
         toast.success("OTP Verification Successful.", { id: toastId });
-        navigate("/");
+        navigate("/login");
       } else {
         toast.error(result.message || "OTP verification failed.", {
           id: toastId,

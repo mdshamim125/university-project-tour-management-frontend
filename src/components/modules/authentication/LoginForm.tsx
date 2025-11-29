@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Password from "@/components/ui/Password";
-import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { useLoginMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import config from "@/config";
 import { useState } from "react";
@@ -35,6 +35,12 @@ export function LoginForm({
   const [login] = useLoginMutation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { data: userInfo } = useUserInfoQuery(undefined);
+
+  // console.log(userInfo);
+  if (userInfo?.data?.isVerified) {
+    navigate("/");
+  }
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({

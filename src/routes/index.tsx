@@ -17,10 +17,10 @@ import { userSidebarItems } from "./userSidebarItems.";
 import EditTour from "@/pages/Admin/EditTour";
 import HomePage from "@/pages/HomePage";
 import TourDetails from "@/pages/TourDetails";
-import Bookings from "@/pages/User/Bookings";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFail from "@/pages/PaymentFail";
 import PaymentCancel from "@/pages/PaymentCancel";
+import Booking from "@/pages/User/Booking";
 
 export const router = createBrowserRouter([
   {
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "booking/:id",
-        Component: Bookings,
+        Component: withAuth(Booking),
       },
       {
         path: "about",
@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
     Component: withAuth(DashboardLayout, role.user as TRole),
     path: "/user",
     children: [
-      { index: true, element: <Navigate to="/user/bookings" /> },
+      { index: true, element: <Navigate to="/user/my-bookings" /> },
       ...generateRoutes(userSidebarItems),
     ],
   },

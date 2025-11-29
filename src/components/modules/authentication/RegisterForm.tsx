@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Password from "@/components/ui/Password";
-import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { useRegisterMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import config from "@/config";
 import { useState } from "react";
@@ -96,6 +96,12 @@ export function RegisterForm({
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+    const { data: userInfo } = useUserInfoQuery(undefined);
+  
+    // console.log(userInfo);
+    if (userInfo?.data?.isVerified) {
+      navigate("/");
+    }
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
