@@ -68,7 +68,7 @@ const MyBookings = () => {
               <TableHead className="font-semibold text-gray-700">
                 Payment Date
               </TableHead>
-              <TableHead className="font-semibold text-gray-700 text-right">
+              <TableHead className="font-semibold text-gray-700">
                 Invoice
               </TableHead>
             </TableRow>
@@ -81,15 +81,12 @@ const MyBookings = () => {
                 <TableCell className="font-medium text-gray-800">
                   {booking?.tour?.title}
                 </TableCell>
-
                 {/* Guest Count */}
                 <TableCell>{booking?.guestCount} People</TableCell>
-
                 {/* Amount */}
                 <TableCell className="font-semibold text-gray-700">
                   ৳ {booking?.payment?.amount}
                 </TableCell>
-
                 {/* Payment */}
                 <TableCell>
                   <span
@@ -106,25 +103,25 @@ const MyBookings = () => {
                     {booking?.payment?.status}
                   </span>
                 </TableCell>
-
                 {/* Booking Date */}
                 <TableCell className="flex items-center gap-2 text-gray-700">
                   <CalendarDays className="w-4 h-4" />
                   {new Date(booking?.createdAt).toLocaleDateString()}
                 </TableCell>
-
                 {/* Invoice Button */}
-                <TableCell className="text-right">
-                  <Link
-                    to={booking?.payment?.invoiceUrl || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-                  >
-                    <FileText className="w-4 h-4" />
-                    View
-                  </Link>
-                </TableCell>
+                {booking?.payment?.invoiceUrl && (
+                  <TableCell className="">
+                    <Link
+                      to={booking?.payment?.invoiceUrl || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View
+                    </Link>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
