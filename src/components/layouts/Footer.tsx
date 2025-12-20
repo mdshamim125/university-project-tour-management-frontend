@@ -100,7 +100,7 @@ export default function Footer() {
             <ul className="space-y-1">
               <li>
                 <Link
-                  to="/faq"
+                  to="/about"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition"
                 >
                   FAQ
@@ -135,7 +135,7 @@ export default function Footer() {
                 +880 1710 534 833
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                support@tourmanagement.com
+                cse12005038brur@gmail.com
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Rangpur, Bangladesh

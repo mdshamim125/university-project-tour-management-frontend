@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "/tours", label: "All Tours" },
-  { href: "/blogs", label: "Blog" },
+  // { href: "/blogs", label: "Blog" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];

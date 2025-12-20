@@ -21,6 +21,7 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFail from "@/pages/PaymentFail";
 import PaymentCancel from "@/pages/PaymentCancel";
 import Booking from "@/pages/User/Booking";
+import ErrorPage from "./../../ErrorPage";
 
 export const router = createBrowserRouter([
   {
@@ -104,5 +105,9 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/user/my-bookings" /> },
       ...generateRoutes(userSidebarItems),
     ],
+  },
+  {
+    path: "*",
+    Component: ErrorPage,
   },
 ]);
