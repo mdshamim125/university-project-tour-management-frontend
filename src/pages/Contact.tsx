@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 
 export default function Contact() {
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="mx-auto  md:px-16 px-8 md:py-10 py-6 bg-gray-50 dark:bg-gray-900">
+      <div className="">
         {/* Heading */}
         <div className="text-center mb-12">
           <motion.h2

@@ -16,7 +16,7 @@ export default function FeaturedTours() {
   const tours = data?.data || [];
 
   return (
-    <section className="mx-auto md:px-16 px-8 py-16">
+    <section className="mx-auto md:px-16 px-8 md:py-10 py-6">
       {/* Section Title */}
       <div className="text-center mb-10">
         <h2 className="text-3xl font-semibold mb-3">Popular Tours</h2>
@@ -41,9 +41,9 @@ export default function FeaturedTours() {
       </div>
 
       {/* See All Button */}
-      <div className="text-center mt-12">
+      <div className="text-center mt-6">
         <Link to="/tours">
-          <Button className="px-8 py-5 text-lg">See All Tours</Button>
+          <Button className="text-lg">See All Tours</Button>
         </Link>
       </div>
     </section>

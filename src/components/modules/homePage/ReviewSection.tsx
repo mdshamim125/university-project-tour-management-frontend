@@ -66,8 +66,8 @@ const reviews: Review[] = [
 
 export default function ReviewSection() {
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4">
+    <section className="mx-auto md:px-16 px-8 md:py-10 py-6 bg-gray-50 dark:bg-gray-900">
+      <div className="">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
             What Our Clients Say

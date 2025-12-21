@@ -67,7 +67,7 @@ export default function AllTours() {
 
   // ---------- Render ----------
   return (
-    <div className="container md:px-16 px-8 mx-auto py-10">
+    <div className="mx-auto  md:px-16 px-8 md:py-10 py-6">
       <h1 className="text-3xl font-semibold mb-8 text-center">All Tours</h1>
 
       {/* 🔹 Filters */}

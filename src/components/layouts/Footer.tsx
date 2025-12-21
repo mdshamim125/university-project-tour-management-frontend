@@ -4,7 +4,7 @@ import { Link } from "react-router";
 export default function Footer() {
   return (
     <footer className="bg-white dark:bg-gray-900 border-t">
-      <div className="container mx-auto px-4 md:px-8 py-10">
+      <div className="mx-auto  px-8 md:py-10 py-6">
         {/* Footer Links */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Logo Section */}
@@ -145,7 +145,7 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <hr className="h-px my-8 bg-gray-200 border-none dark:bg-gray-700" />
+        <hr className="my-4 h-px bg-gray-200 border-none dark:bg-gray-700" />
 
         {/* Copyright & Social */}
         <div>

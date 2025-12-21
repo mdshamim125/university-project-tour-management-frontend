@@ -42,7 +42,7 @@ export default function FAQSection() {
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 py-12">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="mx-auto  md:px-16 px-8 md:py-10 py-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -28,8 +28,8 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <header className="container mx-auto border-b px-4 md:px-6 bg-background/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-      <div className="flex h-16 items-center justify-between gap-4">
+    <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <div className="flex mx-auto w-full h-16 px-4 md:px-6 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
           {/* Mobile menu trigger */}

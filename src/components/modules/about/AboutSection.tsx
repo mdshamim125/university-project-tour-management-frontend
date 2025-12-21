@@ -7,7 +7,7 @@ import FAQSection from "./FAQSection";
 export default function AboutSection() {
   return (
     <section className="bg-gray-50 dark:bg-gray-900 py-16">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="mx-auto  md:px-16 px-8 md:py-10 py-6">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

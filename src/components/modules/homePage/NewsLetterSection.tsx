@@ -9,57 +9,72 @@ export default function NewsLetterSection() {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!email.trim()) return;
-    // Simulate subscription success (replace with your API later)
+
+    // Simulate API success
     setSubscribed(true);
     setEmail("");
     setTimeout(() => setSubscribed(false), 4000);
   };
 
   return (
-    <section className="bg-primary/5 py-16">
-      <div className="max-w-5xl mx-auto text-center px-6">
-        {/* Title */}
-        <h2 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-          Subscribe to Our Newsletter
-        </h2>
-        <p className="text-gray-500 mb-8 max-w-2xl mx-auto">
-          Stay updated with the latest tour packages, travel guides, and exclusive offers from our team.
-        </p>
+    <section className="bg-primary/5 md:px-16 px-8 md:py-10 py-6">
+      <div className="mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Left: Text & Form */}
+        <div className="text-center lg:text-left">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Join Our Travel Newsletter
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md">
+            Get the latest tour deals, travel guides, and exclusive offers —
+            straight to your inbox!
+          </p>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubscribe}
-          className="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-lg mx-auto"
-        >
-          <div className="relative w-full sm:w-auto flex-grow">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="pl-10 w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full sm:w-auto px-6 py-5 text-base"
-            disabled={subscribed}
+          <form
+            onSubmit={handleSubscribe}
+            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
           >
-            {subscribed ? "Subscribed!" : "Subscribe"}
-          </Button>
-        </form>
+            <div className="relative w-full sm:w-auto flex-1">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                type="email"
+                placeholder="Your email address"
+                className="pl-12 h-12 rounded-xl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Success Message */}
-        {subscribed && (
-          <div className="flex justify-center items-center gap-2 text-green-600 mt-6">
-            <CheckCircle2 className="w-5 h-5" />
-            <span>You’ve successfully subscribed!</span>
-          </div>
-        )}
+            <Button
+              type="submit"
+              className="h-12 px-8 rounded-xl text-base font-medium"
+              disabled={subscribed}
+            >
+              {subscribed ? "Subscribed" : "Subscribe"}
+            </Button>
+          </form>
+
+          {subscribed && (
+            <div className="mt-4 flex justify-center lg:justify-start items-center gap-2 text-green-600 font-medium">
+              <CheckCircle2 className="w-5 h-5" />
+              <span>Subscribed successfully!</span>
+            </div>
+          )}
+
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+            We respect your privacy. No spam ever. 💌
+          </p>
+        </div>
+
+        {/* Right: Illustration */}
+        <div className="flex justify-center lg:justify-end">
+          <img
+            src="https://img.freepik.com/premium-vector/concept-newsletter_118813-9660.jpg?semt=ais_hybrid&w=740&q=80"
+            alt="Newsletter illustration"
+            className="w-full max-w-md"
+          />
+        </div>
       </div>
     </section>
   );
