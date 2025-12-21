@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useGetAllToursQuery } from "@/redux/features/tour/tour.api";
 import TourCard from "@/components/TourCard";
 import { Link } from "react-router";
+import TourCardSkeleton from "@/components/skeletons/TourCardSkeleton";
 
 export default function FeaturedTours() {
   // Fetch first 6 tours only
@@ -28,9 +28,9 @@ export default function FeaturedTours() {
       {/* Tours Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[30vh]">
         {isFetching ? (
-          <div className="col-span-full flex justify-center items-center h-[30vh]">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          Array.from({ length: 6 }).map((_, index) => (
+            <TourCardSkeleton key={index} />
+          ))
         ) : tours.length > 0 ? (
           tours.map((tour: any) => <TourCard key={tour._id} tour={tour} />)
         ) : (

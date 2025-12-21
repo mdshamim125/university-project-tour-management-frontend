@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -18,6 +17,7 @@ import {
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
 import TourCard from "@/components/TourCard";
 import { useSearchParams } from "react-router";
+import TourCardSkeleton from "@/components/skeletons/TourCardSkeleton";
 
 export default function AllTours() {
   //   const navigate = useNavigate();
@@ -132,11 +132,12 @@ export default function AllTours() {
       </form>
 
       {/* 🔹 Tours Grid */}
+      {/* 🔹 Tours Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[30vh]">
         {isFetching ? (
-          <div className="col-span-full flex justify-center items-center h-[30vh]">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          Array.from({ length: 6 }).map((_, index) => (
+            <TourCardSkeleton key={index} />
+          ))
         ) : tours.length > 0 ? (
           tours.map((tour: any) => <TourCard key={tour._id} tour={tour} />)
         ) : (

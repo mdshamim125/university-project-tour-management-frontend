@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
 import { Card } from "@/components/ui/card";
-import { Loader2, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Link } from "react-router";
+import DivisionCardSkeleton from "@/components/skeletons/DivisionCardSkeleton";
 
 export default function DivisionSection() {
   const { data, isFetching } = useGetDivisionsQuery({});
@@ -22,15 +23,14 @@ export default function DivisionSection() {
           </p>
         </div>
 
-        {/* Loader */}
-        {isFetching ? (
-          <div className="flex justify-center items-center h-52">
-            <Loader2 className="w-10 h-10 animate-spin text-primary" />
-          </div>
-        ) : divisions.length > 0 ? (
-          /* Division Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {divisions.map((division: any) => (
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 min-h-[300px]">
+          {isFetching ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <DivisionCardSkeleton key={index} />
+            ))
+          ) : divisions.length > 0 ? (
+            divisions.map((division: any) => (
               <Link
                 key={division._id}
                 to={`/tours?division=${division._id}`}
@@ -46,31 +46,29 @@ export default function DivisionSection() {
                       loading="lazy"
                     />
 
-                    {/* Gradient Overlay */}
+                    {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
                     {/* Text */}
                     <div className="absolute bottom-5 left-5 right-5 flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-white opacity-90" />
                       <div>
-                        <h3 className="text-xl font-semibold text-white tracking-wide">
+                        <h3 className="text-xl font-semibold text-white">
                           {division.name}
                         </h3>
-                        <p className="text-sm text-gray-200 opacity-90">
-                          View tours →
-                        </p>
+                        <p className="text-sm text-gray-200">View tours →</p>
                       </div>
                     </div>
                   </div>
                 </Card>
               </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            No divisions available at the moment.
-          </p>
-        )}
+            ))
+          ) : (
+            <p className="text-center col-span-full text-gray-500 dark:text-gray-400">
+              No divisions available at the moment.
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );
