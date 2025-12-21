@@ -4,6 +4,7 @@ import {
   DollarSign,
   Map,
   BarChart3,
+  Loader2,
 } from "lucide-react";
 
 import BookingStatsChart from "@/components/modules/admin/analytics/BookingStatsChart";
@@ -29,7 +30,7 @@ export default function AdminAnalyticsPage() {
     useGetTourStatsQuery();
 
   if (userLoading || bookingLoading || paymentLoading || tourLoading) {
-    return <p className="text-muted-foreground">Loading analytics...</p>;
+    return <Loader2 className="w-8 h-8 animate-spin text-primary" />;
   }
 
   const userStats = userRes?.data;

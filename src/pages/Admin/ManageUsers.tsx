@@ -25,6 +25,7 @@ import {
 } from "@/redux/features/user/user.api";
 import { UpdateUserModal } from "@/components/modules/user/UpdateUserModal";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { Loader2 } from "lucide-react";
 
 export default function ManageUsers() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,7 +76,7 @@ export default function ManageUsers() {
 
   if (userLoading) {
     return (
-      <p className="text-center py-10 text-gray-500">Loading user info...</p>
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
     );
   }
 
