@@ -70,18 +70,18 @@ export default function Contact() {
 
             <div className="flex items-center gap-3">
               <Mail className="text-blue-600" />
-              <p className="text-gray-700 dark:text-gray-200">support@tourmanagement.com</p>
+              <p className="text-gray-700 dark:text-gray-200">cse12005038brur@gmail.com</p>
             </div>
 
             <div className="flex items-center gap-3">
               <Phone className="text-blue-600" />
-              <p className="text-gray-700 dark:text-gray-200">+880 1712-345678</p>
+              <p className="text-gray-700 dark:text-gray-200">+880 1710534833</p>
             </div>
 
             <div className="flex items-center gap-3">
               <MapPin className="text-blue-600" />
               <p className="text-gray-700 dark:text-gray-200">
-                House 12, Road 8, Dhanmondi, Dhaka, Bangladesh
+                Dhaka, Bangladesh
               </p>
             </div>
 

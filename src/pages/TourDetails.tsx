@@ -90,7 +90,8 @@ export default function TourDetails() {
             <div className="flex items-center gap-2">
               <Users className="text-primary" />
               <span>
-                <strong>Guests:</strong> {tour?.maxGuest}, <strong>Min Age:</strong> {tour?.minAge}
+                <strong>Guests:</strong> {tour?.maxGuest},{" "}
+                <strong>Min Age:</strong> {tour?.minAge}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -136,7 +137,9 @@ export default function TourDetails() {
             <h3 className="font-semibold mb-2 flex items-center gap-2 text-blue-600">
               <Layers /> Amenities
             </h3>
-            <p className="text-gray-700">{tour?.amenities?.join(", ") || "N/A"}</p>
+            <p className="text-gray-700">
+              {tour?.amenities?.join(", ") || "N/A"}
+            </p>
           </div>
 
           {/* Tour Plan */}
@@ -154,15 +157,13 @@ export default function TourDetails() {
           {/* Buttons */}
           <div className="flex flex-wrap gap-4 mt-6">
             <Button className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all">
-              <Link to={`/booking/${tour._id}`}>
-              Book Now
-              </Link>
+              <Link to={`/booking/${tour._id}`}>Book Now</Link>
             </Button>
             <Button
               variant="outline"
               className="text-primary border-primary hover:bg-primary hover:text-white shadow-md hover:shadow-lg transition-all"
             >
-              Contact Us
+              <Link to="/contact"> Contact Us</Link>
             </Button>
           </div>
         </CardContent>
