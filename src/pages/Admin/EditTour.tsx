@@ -88,9 +88,8 @@ export default function EditTour() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading("Updating tour..."); // move outside try to access in finally
     try {
-      const toastId = toast.loading("Updating tour...");
-
       // Use RTK mutation with formValues only
       const res = await updateTour({ id, ...formValues }).unwrap();
 
@@ -102,7 +101,10 @@ export default function EditTour() {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating tour");
+      toast.error("Error updating tour", { id: toastId });
+    } finally {
+      // Stop the loading toast in any case
+      toast.dismiss(toastId);
     }
   };
 
