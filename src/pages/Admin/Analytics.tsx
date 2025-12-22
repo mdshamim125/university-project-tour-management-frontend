@@ -26,11 +26,14 @@ export default function AdminAnalyticsPage() {
     useGetBookingStatsQuery();
   const { data: paymentRes, isLoading: paymentLoading } =
     useGetPaymentStatsQuery();
-  const { data: tourRes, isLoading: tourLoading } =
-    useGetTourStatsQuery();
+  const { data: tourRes, isLoading: tourLoading } = useGetTourStatsQuery();
 
   if (userLoading || bookingLoading || paymentLoading || tourLoading) {
-    return <Loader2 className="w-8 h-8 animate-spin text-primary" />;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const userStats = userRes?.data;

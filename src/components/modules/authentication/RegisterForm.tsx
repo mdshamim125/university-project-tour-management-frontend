@@ -18,9 +18,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Password from "@/components/ui/Password";
-import { useRegisterMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import {
+  useRegisterMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
-import config from "@/config";
 import { useState } from "react";
 // const registerSchema = z
 //   .object({
@@ -96,12 +98,12 @@ export function RegisterForm({
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-    const { data: userInfo } = useUserInfoQuery(undefined);
-  
-    // console.log(userInfo);
-    if (userInfo?.data?.isVerified) {
-      navigate("/");
-    }
+  const { data: userInfo } = useUserInfoQuery(undefined);
+
+  // console.log(userInfo);
+  if (userInfo?.data?.isVerified) {
+    navigate("/");
+  }
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -135,9 +137,9 @@ export function RegisterForm({
     }
   }
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${config.baseUrl}/auth/google`;
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href = `${config.baseUrl}/auth/google`;
+  // };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -259,7 +261,7 @@ export function RegisterForm({
                   </Button>
                 </form>
               </Form>
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+              {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
@@ -280,7 +282,7 @@ export function RegisterForm({
                   </svg>
                   <span className="sr-only">Register with Google</span>
                 </Button>
-              </div>
+              </div> */}
               <div className="text-center text-sm">
                 Don you have any account?{" "}
                 <Link to="/login" className="underline underline-offset-4">

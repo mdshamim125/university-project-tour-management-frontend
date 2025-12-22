@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import { useUpdateProfileMutation } from "./redux/features/user/user.api";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50).optional(),
@@ -28,7 +29,7 @@ const formSchema = z.object({
 
 export default function MyProfile() {
   const { data: profileInfo, refetch } = useUserInfoQuery(null);
-  const [updateProfile] = useUpdateProfileMutation();
+  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -127,10 +128,7 @@ export default function MyProfile() {
           </h3>
 
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {["name", "phone", "address", "oldPassword", "password"].map(
                 (field) => (
                   <FormField
@@ -149,11 +147,11 @@ export default function MyProfile() {
                         <FormControl>
                           <Input
                             {...controllerField}
-                            type={field.includes("password") ? "password" : "text"}
+                            type={
+                              field.includes("password") ? "password" : "text"
+                            }
                             placeholder={`Enter your ${
-                              field === "password"
-                                ? "new password"
-                                : field
+                              field === "password" ? "new password" : field
                             }`}
                             className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                           />
@@ -167,9 +165,17 @@ export default function MyProfile() {
 
               <Button
                 type="submit"
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                disabled={isLoading}
+                className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-medium flex items-center justify-center gap-2"
               >
-                Save Changes
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
             </form>
           </Form>
