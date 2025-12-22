@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { useGetTourByIdQuery } from "@/redux/features/tour/tour.api";
 import {
   Loader2,
@@ -20,6 +20,7 @@ export default function TourDetails() {
 
   // Fetch tour by ID
   const { data, isFetching } = useGetTourByIdQuery(id as string);
+  const navigate = useNavigate();
   const tour = data;
 
   if (isFetching) {
@@ -162,8 +163,9 @@ export default function TourDetails() {
             <Button
               variant="outline"
               className="text-primary border-primary hover:bg-primary hover:text-white shadow-md hover:shadow-lg transition-all"
+              onClick={() => navigate("/contact")}
             >
-              <Link to="/contact"> Contact Us</Link>
+              Contact Us
             </Button>
           </div>
         </CardContent>
