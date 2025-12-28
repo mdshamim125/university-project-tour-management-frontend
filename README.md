@@ -161,41 +161,6 @@ To develop a modern tour booking platform that:
 
 ---
 
-## 🧾 Data Model (Core Entities)
-
-### User
-
-- name
-- phone
-- email
-- password
-- role
-- verified
-
-### Tour
-
-- title
-- description
-- price
-- images
-- division
-- slug
-
-### Booking
-
-- userId
-- tourId
-- date
-- status
-- paymentStatus
-
-### Payment
-
-- bookingId
-- transactionId
-- status
-- amount
-
 ---
 
 ## 🔄 Use Case: Booking a Tour
