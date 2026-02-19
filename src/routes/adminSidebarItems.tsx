@@ -1,4 +1,12 @@
-import { BarChart3, MapPin, PlaneTakeoff, Layers, ClipboardList, Users } from "lucide-react"; // import any icons you like
+import {
+  BarChart3,
+  MapPin,
+  PlaneTakeoff,
+  Layers,
+  ClipboardList,
+  Users,
+  User,
+} from "lucide-react"; // import any icons you like
 import AddDivision from "@/pages/Admin/AddDivision";
 import AddTour from "@/pages/Admin/AddTour";
 import AddTourType from "@/pages/Admin/AddTourType";
@@ -6,6 +14,8 @@ import Analytics from "@/pages/Admin/Analytics";
 import type { ISidebarItem } from "@/types";
 import ManageTours from "@/pages/Admin/ManageTours";
 import ManageUsers from "@/pages/Admin/ManageUsers";
+import ManageBookings from "@/pages/Admin/ManageBookings";
+import MyProfile from "@/MyProfile";
 // import EditTour from "@/pages/Admin/EditTour";
 
 export const adminSidebarItems: ISidebarItem[] = [
@@ -56,6 +66,17 @@ export const adminSidebarItems: ISidebarItem[] = [
     ],
   },
   {
+    title: "Booking Management",
+    items: [
+      {
+        title: "Manage Bookings",
+        url: "/admin/manage-bookings",
+        icon: Users,
+        component: ManageBookings,
+      },
+    ],
+  },
+  {
     title: "User Management",
     items: [
       {
@@ -63,6 +84,12 @@ export const adminSidebarItems: ISidebarItem[] = [
         url: "/admin/manage-users",
         icon: Users,
         component: ManageUsers,
+      },
+      {
+        title: "My Profile",
+        url: "/admin/my-profile",
+        icon: User,
+        component: MyProfile,
       },
     ],
   },
