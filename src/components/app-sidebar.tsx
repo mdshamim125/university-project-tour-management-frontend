@@ -1,80 +1,6 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import * as React from "react";
-// import {
-//   Sidebar,
-//   SidebarContent,
-//   SidebarGroup,
-//   SidebarGroupContent,
-//   SidebarGroupLabel,
-//   SidebarHeader,
-//   SidebarMenu,
-//   SidebarMenuButton,
-//   SidebarMenuItem,
-//   SidebarRail,
-// } from "@/components/ui/sidebar";
-// import Logo from "@/assets/icons/Logo";
-// import { Link, useNavigate } from "react-router";
-// import type { TRole } from "@/types";
-// import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
-// import { getSidebarItems } from "@/utils/getSidebarItems";
-
-// export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-//   const { data: userInfo } = useUserInfoQuery(undefined);
-//   const navigate = useNavigate();
-
-//   const data = {
-//     navMain: getSidebarItems(userInfo?.data?.role as TRole),
-//   };
-
-//   const handleGoHome = () => navigate("/");
-
-//   return (
-//     <Sidebar {...props}>
-//       <SidebarHeader onClick={handleGoHome} className="cursor-pointer">
-//         <Logo />
-//       </SidebarHeader>
-
-//       <SidebarContent>
-//         {/* Sidebar groups (each section) */}
-//         {data.navMain.map((group: any) => (
-//           <SidebarGroup key={group.title}>
-//             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-
-//             <SidebarGroupContent>
-//               <SidebarMenu>
-//                 {group.items.map((item: any) => {
-//                   const Icon = item.icon; //  dynamic Lucide icon
-//                   return (
-//                     <SidebarMenuItem key={item.title}>
-//                       <SidebarMenuButton asChild>
-//                         <Link
-//                           to={item.url}
-//                           className="flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
-//                         >
-//                           {/* Only render icon if it exists */}
-//                           {Icon && (
-//                             <Icon size={18} className="text-muted-foreground" />
-//                           )}
-//                           <span>{item.title}</span>
-//                         </Link>
-//                       </SidebarMenuButton>
-//                     </SidebarMenuItem>
-//                   );
-//                 })}
-//               </SidebarMenu>
-//             </SidebarGroupContent>
-//           </SidebarGroup>
-//         ))}
-//       </SidebarContent>
-
-//       <SidebarRail />
-//     </Sidebar>
-//   );
-// }
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
+import { useLocation, Link, useNavigate } from "react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -87,22 +13,25 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import Logo from "@/assets/icons/Logo";
-import { Link, useNavigate } from "react-router";
 import { LogOutIcon } from "lucide-react";
-import { useUserInfoQuery, useLogOutMutation, authApi } from "@/redux/features/auth/auth.api";
+import Logo from "@/assets/icons/Logo";
+import {
+  useUserInfoQuery,
+  useLogOutMutation,
+  authApi,
+} from "@/redux/features/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
 import { getSidebarItems } from "@/utils/getSidebarItems";
+import { cn } from "@/lib/utils"; // shadcn/ui cn utility (for class merging)
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userInfo } = useUserInfoQuery(undefined);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation(); // ← to detect active route
   const [logOut] = useLogOutMutation();
 
-  const data = {
-    navMain: getSidebarItems(userInfo?.data?.role),
-  };
+  const navMain = getSidebarItems(userInfo?.data?.role);
 
   const handleGoHome = () => navigate("/");
 
@@ -110,53 +39,77 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     try {
       await logOut(undefined).unwrap();
       dispatch(authApi.util.resetApiState());
-      navigate("/login"); // redirect after logout
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader onClick={handleGoHome} className="cursor-pointer">
+    <Sidebar {...props} className="border-r bg-card">
+      <SidebarHeader
+        onClick={handleGoHome}
+        className="cursor-pointer p-4 border-b"
+      >
         <Logo />
       </SidebarHeader>
 
-      <SidebarContent>
-        {/* Sidebar groups */}
-        {data.navMain.map((group: any) => (
-          <SidebarGroup key={group.title}>
-            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item: any) => {
-                  const Icon = item.icon;
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          to={item.url}
-                          className="flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                        >
-                          {Icon && <Icon size={18} className="text-muted-foreground" />}
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+      <SidebarContent className="flex flex-col h-full">
+        {/* Navigation Groups */}
+        <div className="flex-1 overflow-y-auto py-4">
+          {navMain.map((group: any) => (
+            <SidebarGroup key={group.title}>
+              <SidebarGroupLabel className="px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {group.title}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item: any) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.url;
 
-        {/* Logout button at the bottom */}
-        <div className="mt-auto mb-4 px-2">
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          className={cn(
+                            "w-full justify-start gap-3 px-4 py-2.5 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                          )}
+                        >
+                          <Link to={item.url}>
+                            {Icon && (
+                              <Icon
+                                size={18}
+                                className={cn(
+                                  "flex-shrink-0",
+                                  isActive
+                                    ? "text-primary"
+                                    : "text-muted-foreground",
+                                )}
+                              />
+                            )}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </div>
+
+        {/* Logout at bottom */}
+        <div className="mt-auto border-t p-4">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
           >
-            <LogOutIcon size={16} />
+            <LogOutIcon size={18} />
             <span>Logout</span>
           </button>
         </div>

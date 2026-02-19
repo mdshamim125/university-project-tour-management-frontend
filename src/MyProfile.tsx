@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,28 +10,45 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Eye, EyeOff, Loader2, Mail, ShieldCheck, ShieldX } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { useUpdateProfileMutation } from "@/redux/features/user/user.api"; // adjust path if needed
 import { toast } from "sonner";
-import { useUpdateProfileMutation } from "./redux/features/user/user.api";
-import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  name: z.string().min(2).max(50).optional(),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  oldPassword: z.string().optional(),
-  password: z.string().optional(),
-});
+  name: z.string().min(2, "Name must be at least 2 characters").max(50).optional(),
+  phone: z.string().regex(/^\+?\d{10,15}$/, "Invalid phone number").optional().or(z.literal("")),
+  address: z.string().max(200).optional().or(z.literal("")),
+  oldPassword: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal("")),
+  password: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal("")),
+}).refine(
+  (data) => {
+    if (data.password && !data.oldPassword) return false;
+    if (data.oldPassword && !data.password) return false;
+    return true;
+  },
+  {
+    message: "Both old and new password are required when changing password",
+    path: ["password"],
+  }
+);
+
+type ProfileFormValues = z.infer<typeof formSchema>;
 
 export default function MyProfile() {
-  const { data: profileInfo, refetch } = useUserInfoQuery(null);
-  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
+  const { data: profile, isLoading: isProfileLoading, refetch } = useUserInfoQuery(null);
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -42,141 +59,263 @@ export default function MyProfile() {
     },
   });
 
-  // Load user info into form
+  // Sync form with fetched profile data
   useEffect(() => {
-    if (profileInfo?.data) {
+    if (profile?.data) {
       form.reset({
-        name: profileInfo.data.name,
-        phone: profileInfo.data.phone,
-        address: profileInfo.data.address || "",
+        name: profile.data.name || "",
+        phone: profile.data.phone || "",
+        address: profile.data.address || "",
         oldPassword: "",
         password: "",
       });
     }
-  }, [profileInfo, form]);
+  }, [profile, form]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const changed: any = {};
-    Object.entries(values).forEach(([key, value]) => {
-      if (value && value !== profileInfo?.data?.[key]) {
-        changed[key] = value;
+  const onSubmit = async (values: ProfileFormValues) => {
+    const payload: Partial<ProfileFormValues> = {};
+
+    // Only send changed fields
+    (["name", "phone", "address", "oldPassword", "password"] as const).forEach((key) => {
+      const value = values[key];
+      if (value && value !== profile?.data?.[key]) {
+        payload[key] = value;
       }
     });
 
-    if (values.password && !values.oldPassword) {
-      toast.error("Enter your old password to set a new one");
-      return;
-    }
-    if (values.oldPassword && !values.password) {
-      toast.error("Enter a new password");
+    if (Object.keys(payload).length === 0) {
+      toast.info("No changes detected");
       return;
     }
 
     try {
       await updateProfile({
-        id: profileInfo?.data?._id || "",
-        ...changed,
+        id: profile?.data?._id || "",
+        ...payload,
       }).unwrap();
-      toast.success("Profile updated successfully!");
+
+      toast.success("Profile updated successfully");
       refetch();
+      form.reset({ ...form.getValues(), oldPassword: "", password: "" });
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update profile");
     }
+  };
+
+  if (isProfileLoading) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  return (
-    <div className="w-full md:w-3/4 lg:w-2/3 mx-auto mt-8 space-y-6">
-      {/* Profile Overview Card */}
-      <Card className="shadow-lg border rounded-lg overflow-hidden">
-        <CardContent className="flex flex-col md:flex-row items-center gap-6 p-6 bg-gradient-to-r from-blue-50 to-white">
-          <div className="flex-shrink-0">
-            <img
-              src={profileInfo?.data?.picture || "/default-avatar.png"}
-              alt="Profile"
-              className="w-28 h-28 rounded-full object-cover border-2 border-blue-500"
-            />
-          </div>
+  const user = profile?.data;
 
-          <div className="flex-1 space-y-2">
-            <h2 className="text-2xl font-bold text-gray-800">
-              {profileInfo?.data?.name || "User"}
-            </h2>
-            <p className="text-gray-600">{profileInfo?.data?.email}</p>
-            <div className="flex flex-wrap gap-4 mt-2 text-sm">
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
-                Role: {profileInfo?.data?.role}
-              </span>
-              <span
-                className={`px-2 py-1 rounded-full font-medium ${
-                  profileInfo?.data?.isVerified
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {profileInfo?.data?.isVerified ? "Verified" : "Not Verified"}
+  return (
+    <div className="container mx-auto max-w-4xl px-4 py-10">
+      {/* Profile Header Card */}
+      <Card className="mb-10 border-none shadow-xl">
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-xl">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <Avatar className="h-24 w-24 border-4 border-white/30 shadow-lg">
+              <AvatarImage src={user?.picture} alt={user?.name} />
+              <AvatarFallback className="bg-white/20 text-3xl font-bold">
+                {user?.name?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="text-center sm:text-left">
+              <h1 className="text-3xl font-bold">{user?.name || "Your Name"}</h1>
+              <p className="mt-1 opacity-90 flex items-center justify-center sm:justify-start gap-2">
+                <Mail className="h-4 w-4" />
+                {user?.email}
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex flex-col items-center md:items-start gap-2">
+              <span className="text-sm text-muted-foreground">Role</span>
+              <Badge variant="secondary" className="text-base px-4 py-1">
+                {user?.role || "User"}
+              </Badge>
+            </div>
+
+            <div className="flex flex-col items-center md:items-start gap-2">
+              <span className="text-sm text-muted-foreground">Verification</span>
+              {user?.isVerified ? (
+                <div className="flex items-center gap-2 text-green-600">
+                  <ShieldCheck className="h-5 w-5" />
+                  <span className="font-medium">Verified</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-amber-600">
+                  <ShieldX className="h-5 w-5" />
+                  <span className="font-medium">Not Verified</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center md:items-start gap-2">
+              <span className="text-sm text-muted-foreground">Member Since</span>
+              <span className="font-medium">
+                {user?.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : "—"}
               </span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Profile Edit Form */}
-      <Card className="shadow-lg border rounded-lg overflow-hidden">
-        <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-6 border-b pb-2 text-gray-700">
-            Edit Profile
-          </h3>
+      {/* Edit Profile Form */}
+      <Card className="border-none shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-2xl">Update Profile</CardTitle>
+          <CardDescription>
+            Update your personal information and password
+          </CardDescription>
+        </CardHeader>
 
+        <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {["name", "phone", "address", "oldPassword", "password"].map(
-                (field) => (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium border-b pb-2">Personal Information</h3>
+
+                <div className="grid gap-6 sm:grid-cols-2">
                   <FormField
-                    key={field}
                     control={form.control}
-                    name={field as any}
-                    render={({ field: controllerField }) => (
+                    name="name"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-medium text-gray-700">
-                          {field === "oldPassword"
-                            ? "Old Password"
-                            : field === "password"
-                            ? "New Password"
-                            : field.charAt(0).toUpperCase() + field.slice(1)}
-                        </FormLabel>
+                        <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input
-                            {...controllerField}
-                            type={
-                              field.includes("password") ? "password" : "text"
-                            }
-                            placeholder={`Enter your ${
-                              field === "password" ? "new password" : field
-                            }`}
-                            className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          />
+                          <Input placeholder="Your full name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                )
-              )}
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-medium flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+8801xxxxxxxxx" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your current address" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Password Change */}
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="text-lg font-medium">Change Password</h3>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="oldPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current Password</FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              type={showOldPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              {...field}
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3"
+                            onClick={() => setShowOldPassword(!showOldPassword)}
+                          >
+                            {showOldPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              type={showNewPassword ? "text" : "password"}
+                              placeholder="New password (min 6 characters)"
+                              {...field}
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                          >
+                            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-6">
+                <Button
+                  type="submit"
+                  disabled={isUpdating || isProfileLoading}
+                  className="min-w-[160px]"
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
