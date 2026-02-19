@@ -32,6 +32,7 @@ export default function ManageBookings() {
   if (statusFilter) query.status = statusFilter;
 
   const { data, isFetching } = useGetAllBookingsQuery(query);
+  console.log(data);
   const totalPage = data?.meta?.totalPage || 1;
 
   return (
