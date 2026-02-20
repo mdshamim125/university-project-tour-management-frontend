@@ -1,54 +1,87 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// components/modules/admin/analytics/TourStatsChart.tsx
-
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
+  Legend,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Map } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 interface TourStatsChartProps {
-  data: any[];
+  data: any[] | undefined;
 }
 
 export default function TourStatsChart({ data }: TourStatsChartProps) {
-  return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-lg font-semibold">
-            Tours by Type
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Distribution of tours based on tour category
-          </p>
-        </div>
-        <Map className="h-6 w-6 text-muted-foreground" />
-      </CardHeader>
+  if (!data || data.length === 0) {
+    return (
+      <Card className="border-none shadow-md">
+        <CardHeader>
+          <CardTitle>Tours by Type</CardTitle>
+          <CardDescription>Distribution of tours by category</CardDescription>
+        </CardHeader>
+        <CardContent className="h-[320px] flex items-center justify-center text-muted-foreground">
+          No tour type data available yet.
+        </CardContent>
+      </Card>
+    );
+  }
 
+  return (
+    <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">Tours by Type</CardTitle>
+        <CardDescription>
+          Distribution of tours across different categories
+        </CardDescription>
+      </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="_id"
-              tick={{ fontSize: 12 }}
-              axisLine={false}
-            />
-            <YAxis tick={{ fontSize: 12 }} axisLine={false} />
-            <Tooltip />
-            <Bar
-              dataKey="count"
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis
+                dataKey="_id"
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                allowDecimals={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(255,255,255,0.95)",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                }}
+              />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Bar
+                dataKey="count"
+                fill="#8b5cf6"
+                radius={[6, 6, 0, 0]}
+                name="Tour Count"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );
