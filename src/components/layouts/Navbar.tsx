@@ -84,7 +84,7 @@ export default function Navbar() {
                             "after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 after:ease-out",
                             isActive
                               ? "text-primary  font-semibold after:w-full" // Keep underline when active
-                              : "text-muted-foreground"
+                              : "text-muted-foreground",
                           )}
                         >
                           <Link to={link.href}>{link.label}</Link>
@@ -119,7 +119,7 @@ export default function Navbar() {
                             "after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 after:ease-out",
                             isActive
                               ? "text-primary  font-semibold after:w-full" // Keep underline when active
-                              : "text-muted-foreground"
+                              : "text-muted-foreground",
                           )}
                         >
                           {link.label}

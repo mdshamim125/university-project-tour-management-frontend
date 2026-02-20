@@ -84,7 +84,7 @@ export function LoginForm({
           navigate("/");
         } else {
           toast.error(
-            "Your account is not verified. Please verify your email."
+            "Your account is not verified. Please verify your email.",
           );
           navigate("/verify", { state: userInfo.email });
         }
@@ -117,7 +117,7 @@ export function LoginForm({
       if (result.success) {
         if (result.data.user.isVerified) {
           toast.success(
-            `Logged in as Demo ${type === "admin" ? "Admin" : "User"}`
+            `Logged in as Demo ${type === "admin" ? "Admin" : "User"}`,
           );
           navigate("/");
         } else {
