@@ -147,7 +147,7 @@ export default function ManageTours() {
                         <DeleteConfirmation
                           onConfirm={() => handleRemove(tour._id)}
                         >
-                          <Button size="sm" variant="destructive">
+                          <Button size="sm">
                             <Trash2 size={16} />
                           </Button>
                         </DeleteConfirmation>
