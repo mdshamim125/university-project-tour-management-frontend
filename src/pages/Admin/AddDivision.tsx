@@ -80,7 +80,7 @@ export default function AddDivision() {
                       <DeleteConfirmation
                         onConfirm={() => handleRemoveDivision(item._id)}
                       >
-                        <Button size="sm" variant="destructive">
+                        <Button size="sm">
                           <Trash2 />
                         </Button>
                       </DeleteConfirmation>

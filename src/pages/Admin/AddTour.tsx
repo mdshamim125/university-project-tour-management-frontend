@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -31,9 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import type { FileMetadata } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
 import {
@@ -45,663 +43,639 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO } from "date-fns";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
+import { z } from "zod";
 
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  location: z.string().min(1, "Location is required"),
-  costFrom: z.string().min(1, "Cost is required"),
-  startDate: z.date({ message: "Start date is required" }),
-  endDate: z.date({ message: "End date is required" }),
-  departureLocation: z.string().min(1, "Departure location is required"),
-  arrivalLocation: z.string().min(1, "Arrival location is required"),
-  included: z.array(z.object({ value: z.string() })),
-  excluded: z.array(z.object({ value: z.string() })),
-  amenities: z.array(z.object({ value: z.string() })),
-  tourPlan: z.array(z.object({ value: z.string() })),
-  maxGuest: z.string().min(1, "Max guest is required"),
-  minAge: z.string().min(1, "Minimum age is required"),
-  division: z.string().min(1, "Division is required"),
-  tourType: z.string().min(1, "Tour type is required"),
-});
+// ────────────────────────────────────────────────
+//                  Zod Schema (Frontend)
+// ────────────────────────────────────────────────
+const formSchema = z
+  .object({
+    title: z.string().min(3, "Tour title must be at least 3 characters"),
+    description: z.string().min(20, "Description should be more descriptive"),
+    location: z.string().min(2, "Location is required"),
+    costFrom: z
+      .string()
+      .min(1, "Price is required")
+      .regex(/^\d+(\.\d{1,2})?$/, "Enter a valid price"),
+    // ── Modern & correct way for required date ──
+    startDate: z
+      .date()
+      .refine((val) => !!val, { message: "Start date is required" }),
+
+    endDate: z
+      .date()
+      .refine((val) => !!val, { message: "End date is required" }),
+    departureLocation: z.string().min(2, "Departure location is required"),
+    arrivalLocation: z.string().min(2, "Arrival location is required"),
+    included: z.array(
+      z.object({ value: z.string().min(1, "Cannot be empty") }),
+    ),
+    excluded: z.array(
+      z.object({ value: z.string().min(1, "Cannot be empty") }),
+    ),
+    amenities: z.array(
+      z.object({ value: z.string().min(1, "Cannot be empty") }),
+    ),
+    tourPlan: z.array(
+      z.object({ value: z.string().min(1, "Cannot be empty") }),
+    ),
+    maxGuest: z
+      .string()
+      .min(1, "Maximum guests is required")
+      .regex(/^\d+$/, "Must be a whole number"),
+    minAge: z
+      .string()
+      .min(1, "Minimum age is required")
+      .regex(/^\d+$/, "Must be a whole number"),
+    division: z.string().min(1, "Please select a division"),
+    tourType: z.string().min(1, "Please select a tour type"),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function AddTour() {
-  const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
+  const [images, setImages] = useState<(File | any)[]>([]);
 
   const { data: divisionData, isLoading: divisionLoading } =
     useGetDivisionsQuery(undefined);
-  const { data: tourTypeData } = useGetTourTypesQuery(undefined);
-  const [addTour] = useAddTourMutation();
+  const { data: tourTypeData, isLoading: tourTypeLoading } =
+    useGetTourTypesQuery(undefined);
 
-  const divisionOptions = divisionData?.data?.map(
-    (item: { _id: string; name: string }) => ({
+  const [addTour, { isLoading: isSubmitting }] = useAddTourMutation();
+
+  const divisionOptions =
+    divisionData?.data?.map((item: { _id: string; name: string }) => ({
       value: item._id,
       label: item.name,
-    })
-  );
+    })) ?? [];
 
-  const tourTypeOptions = tourTypeData?.data?.map(
-    (tourType: { _id: string; name: string }) => ({
-      value: tourType._id,
-      label: tourType.name,
-    })
-  );
+  const tourTypeOptions =
+    tourTypeData?.data?.map((item: { _id: string; name: string }) => ({
+      value: item._id,
+      label: item.name,
+    })) ?? [];
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
+      location: "",
       costFrom: "",
       startDate: new Date(),
-      endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days later
+      endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
       departureLocation: "",
       arrivalLocation: "",
-      included: [
-        { value: "Accommodation for 2 nights" },
-        { value: "All meals (breakfast, lunch, dinner)" },
-        { value: "Transportation (AC bus)" },
-        { value: "Professional tour guide" },
-        { value: "Entry fees to all historical sites" },
-        { value: "Paharpur monastery visit" },
-      ],
-      excluded: [
-        { value: "Personal expenses" },
-        { value: "Extra activities not mentioned" },
-        { value: "Travel insurance" },
-        { value: "Shopping expenses" },
-        { value: "Photography charges at monuments" },
-      ],
-      amenities: [
-        { value: "Comfortable hotel rooms" },
-        { value: "Free WiFi" },
-        { value: "Air conditioning" },
-        { value: "Local transportation" },
-        { value: "Cultural performance evening" },
-      ],
+      included: [{ value: "Accommodation" }, { value: "Professional guide" }],
+      excluded: [{ value: "Personal expenses" }, { value: "Travel insurance" }],
+      amenities: [{ value: "Air conditioning" }, { value: "Wi-Fi" }],
       tourPlan: [
-        { value: "Day 1: Arrival in Rajshahi and Puthia Palace complex tour" },
-        { value: "Day 2: Paharpur Buddhist monastery and Mahasthangarh visit" },
-        { value: "Day 3: Rajshahi city tour and silk weaving centers" },
+        { value: "Day 1: Arrival & welcome" },
+        { value: "Day 2: Main activities" },
       ],
       maxGuest: "",
       minAge: "",
       division: "",
       tourType: "",
     },
+    mode: "onChange",
   });
 
   const {
     fields: includedFields,
     append: appendIncluded,
     remove: removeIncluded,
-  } = useFieldArray({
-    control: form.control,
-    name: "included",
-  });
+  } = useFieldArray({ control: form.control, name: "included" });
 
   const {
     fields: excludedFields,
     append: appendExcluded,
     remove: removeExcluded,
-  } = useFieldArray({
-    control: form.control,
-    name: "excluded",
-  });
+  } = useFieldArray({ control: form.control, name: "excluded" });
 
   const {
     fields: amenitiesFields,
     append: appendAmenities,
     remove: removeAmenities,
-  } = useFieldArray({
-    control: form.control,
-    name: "amenities",
-  });
+  } = useFieldArray({ control: form.control, name: "amenities" });
 
   const {
     fields: tourPlanFields,
     append: appendTourPlan,
     remove: removeTourPlan,
-  } = useFieldArray({
-    control: form.control,
-    name: "tourPlan",
-  });
+  } = useFieldArray({ control: form.control, name: "tourPlan" });
 
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    const toastId = toast.loading("Creating tour....");
+  const safeNumber = (value: string): number | undefined => {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    const num = Number(trimmed);
+    return isNaN(num) ? undefined : num;
+  };
 
+  const onSubmit = async (values: FormValues) => {
     if (images.length === 0) {
-      toast.error("Please add some images", { id: toastId });
+      toast.error("At least one image is required");
       return;
     }
 
-    const tourData = {
-      ...data,
-      costFrom: Number(data.costFrom),
-      minAge: Number(data.minAge),
-      maxGuest: Number(data.maxGuest),
-      startDate: formatISO(data.startDate),
-      endDate: formatISO(data.endDate),
-      included:
-        data.included[0].value === ""
-          ? []
-          : data.included.map((item: { value: string }) => item.value),
-      excluded:
-        data.included[0].value === ""
-          ? []
-          : data.excluded.map((item: { value: string }) => item.value),
-      amenities:
-        data.amenities[0].value === ""
-          ? []
-          : data.amenities.map((item: { value: string }) => item.value),
-      tourPlan:
-        data.tourPlan[0].value === ""
-          ? []
-          : data.tourPlan.map((item: { value: string }) => item.value),
+    const toastId = toast.loading("Creating tour...");
+
+    const payload: any = {
+      title: values.title.trim(),
+      description: values.description.trim() || undefined,
+      location: values.location.trim() || undefined,
+      departureLocation: values.departureLocation.trim() || undefined,
+      arrivalLocation: values.arrivalLocation.trim() || undefined,
+
+      // ── Critical fix: empty string → undefined ──
+      costFrom: safeNumber(values.costFrom),
+      maxGuest: safeNumber(values.maxGuest),
+      minAge: safeNumber(values.minAge),
+
+      startDate: formatISO(values.startDate),
+      endDate: formatISO(values.endDate),
+
+      division: values.division,
+      tourType: values.tourType,
+
+      included: values.included.map((i) => i.value.trim()).filter(Boolean),
+      excluded: values.excluded.map((i) => i.value.trim()).filter(Boolean),
+      amenities: values.amenities.map((i) => i.value.trim()).filter(Boolean),
+      tourPlan: values.tourPlan.map((i) => i.value.trim()).filter(Boolean),
     };
 
-    const formData = new FormData();
+    // Optional: debug what is actually being sent
+    // console.log("Payload being sent:", payload);
 
-    formData.append("data", JSON.stringify(tourData));
-    images.forEach((image) => formData.append("files", image as File));
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(payload));
+
+    images.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("files", file);
+      }
+    });
 
     try {
       const res = await addTour(formData).unwrap();
 
-      if (res.success) {
-        toast.success("Tour created", { id: toastId });
+      if (res?.success) {
+        toast.success("Tour created successfully", { id: toastId });
         form.reset();
+        setImages([]);
       } else {
-        toast.error("Something went wrong", { id: toastId });
+        toast.error(res?.message || "Failed to create tour", { id: toastId });
       }
     } catch (err: unknown) {
-      console.error(err);
-      toast.error((err as IErrorResponse).message || "Something went wrong", {
-        id: toastId,
-      });
+      const error = err as IErrorResponse;
+      toast.error(error?.message || "Something went wrong", { id: toastId });
+      console.error("Tour creation error:", err);
     }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 mt-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Add New Tour</CardTitle>
-          <CardDescription className="text-large">
-            Add a new tour to the system
+    <div className="container max-w-5xl py-10 mx-auto">
+      <Card className="border-t-4 border-primary/30 shadow-lg">
+        <CardHeader className="pb-6">
+          <CardTitle className="text-3xl font-bold tracking-tight">
+            Create New Tour Package
+          </CardTitle>
+          <CardDescription className="text-base">
+            Fill in the details to add a new tour to the catalog
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form
-              id="add-tour-form"
-              className="space-y-5"
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-10"
+              noValidate
             >
-              {/* Tour Title */}
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tour Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Enter tour title" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Location & Cost */}
-              <div className="flex gap-5">
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter location" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="costFrom"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Cost</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter cost" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Departure & Arrival */}
-              <div className="flex gap-5">
-                <FormField
-                  control={form.control}
-                  name="departureLocation"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Departure Location</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter departure location"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="arrivalLocation"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Arrival Location</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter arrival location"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Division & Tour Type */}
-              <div className="flex gap-5">
-                <FormField
-                  control={form.control}
-                  name="division"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Division</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={divisionLoading}
-                      >
+              {/* ─── Basic Information ─── */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Basic Information
+                </h3>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tour Title *</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select division" />
-                          </SelectTrigger>
+                          <Input
+                            placeholder="e.g. Cox's Bazar Beach Escape"
+                            {...field}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          {divisionOptions?.map((item: any) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="tourType"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Tour Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Main Location *</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select tour type" />
-                          </SelectTrigger>
+                          <Input
+                            placeholder="e.g. Cox's Bazar, Sylhet"
+                            {...field}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          {tourTypeOptions?.map((item: any) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              {/* Max Guest & Minimum Age */}
-              <div className="flex gap-5">
-                <FormField
-                  control={form.control}
-                  name="maxGuest"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Max Guest</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter maximum guest" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="minAge"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Minimum Age</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter minimum age" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Dates */}
-              <div className="flex gap-5">
-                {/* Start Date */}
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 flex-col">
-                      <FormLabel>Start Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal"
-                              )}
-                            >
-                              {field.value
-                                ? format(field.value, "PPP")
-                                : "Pick start date"}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <
-                              new Date(
-                                new Date().setDate(new Date().getDate() - 1)
-                              )
-                            }
-                            captionLayout="dropdown"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* End Date */}
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 flex-col">
-                      <FormLabel>End Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full pl-3 text-left font-normal"
-                              )}
-                            >
-                              {field.value
-                                ? format(field.value, "PPP")
-                                : "Pick end date"}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <
-                              new Date(
-                                new Date().setDate(new Date().getDate() - 1)
-                              )
-                            }
-                            captionLayout="dropdown"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Description & Image Uploader */}
-              <div className="flex gap-5 items-stretch">
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Description</FormLabel>
+                    <FormItem>
+                      <FormLabel>Description *</FormLabel>
                       <FormControl>
                         <Textarea
+                          placeholder="Describe the tour experience, highlights, target audience..."
+                          className="min-h-[140px] resize-y"
                           {...field}
-                          placeholder="Enter tour description"
-                          className="h-[205px]"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="flex-1 mt-5">
+              </div>
+
+              <Separator />
+
+              {/* ─── Pricing & Capacity ─── */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Pricing & Capacity
+                </h3>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <FormField
+                    control={form.control}
+                    name="costFrom"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price From (BDT) *</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="6500" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="maxGuest"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Guests *</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="20" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="minAge"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Min Age *</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="12" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* ─── Dates & Locations ─── */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Travel Period & Locations
+                </h3>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  <FormField
+                    control={form.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Date *</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "justify-start text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Pick date"}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>End Date *</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "justify-start text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Pick date"}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="departureLocation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Departure *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Dhaka" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="arrivalLocation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Arrival *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Cox's Bazar" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="division"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Division *</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={divisionLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select division" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {divisionOptions.map((opt: any) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tourType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tour Type *</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={tourTypeLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {tourTypeOptions.map((opt: any) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* ─── Images ─── */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Tour Gallery
+                </h3>
+                <div
+                  className={cn(
+                    "rounded-lg border-2 border-dashed p-6 transition-colors",
+                    images.length === 0 &&
+                      "border-destructive/50 bg-destructive/5",
+                  )}
+                >
                   <MultipleImageUploader onChange={setImages} />
+                  {images.length === 0 && form.formState.isSubmitted && (
+                    <p className="mt-2 text-sm text-destructive text-center">
+                      Please upload at least one tour image
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* //fjfjlkwafhuihf */}
-              <div className="border-t border-muted w-full "></div>
-              <div>
-                <div className="flex justify-between">
-                  <p className="font-semibold">Included</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => appendIncluded({ value: "" })}
-                  >
-                    <Plus />
-                  </Button>
-                </div>
+              <Separator />
 
-                <div className="space-y-4 mt-4">
-                  {includedFields.map((item, index) => (
-                    <div className="flex gap-2" key={item.id}>
-                      <FormField
-                        control={form.control}
-                        name={`included.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        onClick={() => removeIncluded(index)}
-                        variant="destructive"
-                        className="!bg-red-700"
-                        size="icon"
-                        type="button"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* ─── Arrays ─── */}
+              {[
+                {
+                  title: "What's Included",
+                  fields: includedFields,
+                  append: appendIncluded,
+                  remove: removeIncluded,
+                  name: "included",
+                },
+                {
+                  title: "What's Excluded",
+                  fields: excludedFields,
+                  append: appendExcluded,
+                  remove: removeExcluded,
+                  name: "excluded",
+                },
+                {
+                  title: "Amenities",
+                  fields: amenitiesFields,
+                  append: appendAmenities,
+                  remove: removeAmenities,
+                  name: "amenities",
+                },
+                {
+                  title: "Day-by-Day Plan",
+                  fields: tourPlanFields,
+                  append: appendTourPlan,
+                  remove: removeTourPlan,
+                  name: "tourPlan",
+                },
+              ].map(({ title, fields, append, remove, name }) => (
+                <div key={name} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-semibold tracking-tight">
+                      {title}
+                    </h3>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => append({ value: "" })}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Item
+                    </Button>
+                  </div>
 
-              <div>
-                <div className="flex justify-between">
-                  <p className="font-semibold">Excluded</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => appendExcluded({ value: "" })}
-                  >
-                    <Plus />
-                  </Button>
+                  <div className="space-y-3">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex gap-3 items-start">
+                        <FormField
+                          control={form.control}
+                          name={
+                            `${name}.${index}.value` as
+                              | `included.${number}.value`
+                              | `excluded.${number}.value`
+                              | `amenities.${number}.value`
+                              | `tourPlan.${number}.value`
+                          }
+                          render={({ field: inputField }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input
+                                  placeholder={
+                                    name === "tourPlan"
+                                      ? "Day 1: Description of activities..."
+                                      : "Enter detail..."
+                                  }
+                                  {...inputField}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 mt-1"
+                          onClick={() => remove(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ))}
 
-                <div className="space-y-4 mt-4">
-                  {excludedFields.map((item, index) => (
-                    <div className="flex gap-2" key={item.id}>
-                      <FormField
-                        control={form.control}
-                        name={`excluded.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        onClick={() => removeExcluded(index)}
-                        variant="destructive"
-                        className="!bg-red-700"
-                        size="icon"
-                        type="button"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between">
-                  <p className="font-semibold">Amenities</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => appendAmenities({ value: "" })}
-                  >
-                    <Plus />
-                  </Button>
-                </div>
-
-                <div className="space-y-4 mt-4">
-                  {amenitiesFields.map((item, index) => (
-                    <div className="flex gap-2" key={item.id}>
-                      <FormField
-                        control={form.control}
-                        name={`amenities.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        onClick={() => removeAmenities(index)}
-                        variant="destructive"
-                        className="!bg-red-700"
-                        size="icon"
-                        type="button"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between">
-                  <p className="font-semibold">Tour Plan</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => appendTourPlan({ value: "" })}
-                  >
-                    <Plus />
-                  </Button>
-                </div>
-
-                <div className="space-y-4 mt-4">
-                  {tourPlanFields.map((item, index) => (
-                    <div className="flex gap-2" key={item.id}>
-                      <FormField
-                        control={form.control}
-                        name={`tourPlan.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        onClick={() => removeTourPlan(index)}
-                        variant="destructive"
-                        className="!bg-red-700"
-                        size="icon"
-                        type="button"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+              <div className="pt-8 flex justify-end">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="px-10"
+                  disabled={isSubmitting || !form.formState.isValid}
+                >
+                  {isSubmitting ? "Creating Tour..." : "Create Tour Package"}
+                </Button>
               </div>
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button type="submit" form="add-tour-form">
-            Create Tour
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
