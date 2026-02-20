@@ -1,5 +1,10 @@
+import { useEffect, useRef } from "react";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface Review {
   name: string;
@@ -42,57 +47,117 @@ const reviews: Review[] = [
     tourName: "Rajshahi Mango & Silk Tour",
     date: "2025-09-12",
   },
-  //   {
-  //     name: "Farhana Akter",
-  //     location: "Sylhet, Bangladesh",
-  //     image: "https://i.ibb.co/pdw2XkY/user4.jpg",
-  //     rating: 5,
-  //     review:
-  //       "Superb experience! I joined the Barishal Riverside Tour — the floating market was a highlight. Everything was smooth and well-managed.",
-  //     tourName: "Barishal Riverside Tour",
-  //     date: "2025-10-02",
-  //   },
-  //   {
-  //     name: "Tanvir Alam",
-  //     location: "Rangpur, Bangladesh",
-  //     image: "https://i.ibb.co/TtKczHF/user5.jpg",
-  //     rating: 4.7,
-  //     review:
-  //       "Great hospitality and excellent communication throughout the tour. The Rangpur Historical Exploration was both educational and enjoyable.",
-  //     tourName: "Rangpur Historical Exploration",
-  //     date: "2025-09-22",
-  //   },
+  // Add more when ready...
 ];
 
 export default function ReviewSection() {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    gsap.fromTo(
+      ".review-card",
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: { amount: 0.4 },
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      },
+    );
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 !== 0;
+    const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+
+    return (
+      <div className="flex items-center gap-0.5">
+        {[...Array(fullStars)].map((_, i) => (
+          <Star
+            key={`full-${i}`}
+            className="w-5 h-5 fill-yellow-500 text-yellow-500"
+          />
+        ))}
+        {hasHalf && (
+          <Star className="w-5 h-5 fill-yellow-500/50 text-yellow-500" />
+        )}
+        {[...Array(emptyStars)].map((_, i) => (
+          <Star
+            key={`empty-${i}`}
+            className="w-5 h-5 text-gray-300 dark:text-gray-600"
+          />
+        ))}
+        <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          {rating.toFixed(1)}
+        </span>
+      </div>
+    );
+  };
+
   return (
-    <section className="mx-auto md:px-16 px-8 md:py-10 py-6 bg-gray-50 dark:bg-gray-900">
-      <div className="">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            What Our Clients Say
+    <section className="bg-gray-50 dark:bg-gray-950 py-12 md:py-16 lg:py-20">
+      <div className="container mx-auto px-6 md:px-10 lg:px-16">
+        {/* Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+            What Our Travelers Say
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Real travelers. Real experiences. Real satisfaction.
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            Authentic experiences from real guests who explored Bangladesh with
+            us.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Reviews Grid */}
+        <div
+          ref={gridRef}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+        >
           {reviews.map((review, index) => (
             <Card
               key={index}
-              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow bg-white dark:bg-gray-800"
+              className="
+                review-card
+                overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800
+                bg-white dark:bg-gray-900 shadow-sm hover:shadow-xl
+                transition-all duration-300 hover:-translate-y-1
+                flex flex-col h-full
+              "
             >
-              <CardContent className="p-6">
-                {/* Profile */}
-                <div className="flex items-center mb-4">
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    className="w-12 h-12 rounded-full mr-3 object-cover"
-                  />
+              <CardContent className="p-6 md:p-7 flex flex-col flex-1">
+                {/* Reviewer Info */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={review.image}
+                      alt={`${review.name} - traveler`}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-gray-100 dark:border-gray-800 shadow-sm"
+                      loading="lazy"
+                    />
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-100">
+                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
                       {review.name}
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -101,25 +166,38 @@ export default function ReviewSection() {
                   </div>
                 </div>
 
-                {/* Review Text */}
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                  “{review.review}”
-                </p>
+                {/* Stars */}
+                <div className="mb-4">{renderStars(review.rating)}</div>
 
-                {/* Tour Info */}
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-gray-600 dark:text-gray-400">
-                    {review.tourName}
-                  </span>
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    <Star className="w-4 h-4 fill-yellow-500" />
-                    <span>{review.rating}</span>
+                {/* Review Text */}
+                <blockquote className="flex-1 text-gray-700 dark:text-gray-300 leading-relaxed mb-6 italic">
+                  “{review.review}”
+                </blockquote>
+
+                {/* Tour & Date Footer */}
+                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm gap-2">
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      {review.tourName}
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      {formatDate(review.date)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {/* Optional: See more link or carousel indicator if you expand */}
+        {reviews.length < 6 && (
+          <div className="text-center mt-10">
+            <p className="text-gray-500 dark:text-gray-400">
+              More traveler stories coming soon...
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

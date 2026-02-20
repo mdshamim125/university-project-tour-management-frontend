@@ -71,14 +71,16 @@ export default function HeroSection() {
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-black/30 bg-opacity-40 flex flex-col justify-center items-start p-8 md:p-16">
-                <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                  {slide.title}
-                </h2>
-                <p className="text-white text-lg md:text-xl max-w-lg">
-                  {slide.subtitle}
-                </p>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center p-8 md:p-16">
+                <div className="max-w-2xl space-y-3">
+                  <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
+                    {slide.title}
+                  </h2>
+
+                  <p className="text-gray-100 text-lg md:text-xl drop-shadow-md">
+                    {slide.subtitle}
+                  </p>
+                </div>
               </div>
             </div>
           </SwiperSlide>
