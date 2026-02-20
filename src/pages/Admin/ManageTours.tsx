@@ -117,7 +117,7 @@ export default function ManageTours() {
 
           {/* Add New Tour Button */}
           <Button asChild>
-            <Link to="/admin/tour/add">Add New Tour</Link>
+            <Link to="/admin/add-tour">Add New Tour</Link>
           </Button>
         </div>
       </div>
@@ -218,7 +218,7 @@ export default function ManageTours() {
                     <DeleteConfirmation
                       onConfirm={() => handleRemove(tour._id)}
                     >
-                      <Button size="sm" >
+                      <Button size="sm">
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete
                       </Button>
@@ -261,11 +261,7 @@ export default function ManageTours() {
                       <DeleteConfirmation
                         onConfirm={() => handleRemove(tour._id)}
                       >
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className=""
-                        >
+                        <Button size="sm" variant="ghost" className="">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </DeleteConfirmation>
